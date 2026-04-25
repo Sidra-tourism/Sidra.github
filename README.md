@@ -11,3 +11,9 @@ https://www.sidratourism.com
 
 ```http
 GET /
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+"Sidra Tourism API Running"
+```
