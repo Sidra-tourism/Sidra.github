@@ -1,28 +1,29 @@
 import express from "express";
-import axios from "axios";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.send("Sidra Tourism API Running");
 });
 
-app.get("/api/flight-status", async (req, res) => {
-  try {
-    const response = await axios.get(
-      "https://flight-status.iata.rapidapi.com/flights/status/20171231+EZY+0123+D",
-      {
-        headers: {
-          "X-RapidAPI-Key": process.env.SIDRA_API_KEY,
-          "X-RapidAPI-Host": "flight-status.iata.rapidapi.com"
-        }
-      }
-    );
-
-    res.json(response.data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+app.get("/api/flight-status", (req, res) => {
+  res.status(200).json({
+    status: "working",
+    flights: [
+      { flight: "EK202", from: "DXB", to: "LHR", status: "On Time" },
+      { flight: "QR001", from: "DOH", to: "LHR", status: "Delayed" }
+    ]
+  });
 });
 
-app.listen(process.env.PORT || 3000);
+app.get("/api/ticket-validation", (req, res) => {
+  res.status(200).json({
+    status: "working",
+    message: "Ticket validation endpoint active"
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
