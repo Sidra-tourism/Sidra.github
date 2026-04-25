@@ -3,8 +3,13 @@ import express from "express";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.send("Sidra Tourism API Running");
+app.use(express.static("public"));
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "working",
+    message: "Sidra Tourism API Running"
+  });
 });
 
 app.get("/api/flight-status", (req, res) => {
