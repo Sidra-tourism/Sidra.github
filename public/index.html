@@ -13,7 +13,7 @@
     .brand h2 { color: #075bd8; font-size: 25px; line-height: 1; }
     .brand small { color: #08244d; font-size: 14px; }
     nav a { margin: 0 12px; text-decoration: none; color: #08244d; font-weight: 700; }
-    .btn { background: #075bd8; color: white; padding: 13px 25px; border-radius: 10px; text-decoration: none; border: none; cursor: pointer; font-weight: 800; }
+    .btn { background: #075bd8; color: white; padding: 13px 25px; border-radius: 10px; text-decoration: none; border: none; cursor: pointer; font-weight: 800; display: inline-block; }
     .hero { min-height: 650px; background: linear-gradient(rgba(0,35,80,.62), rgba(0,35,80,.38)), url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80"); background-size: cover; background-position: center; padding: 90px 6%; color: white; }
     .hero h1 { font-size: 66px; max-width: 720px; line-height: 1.05; margin-bottom: 18px; }
     .hero p { font-size: 25px; margin-bottom: 32px; }
@@ -23,7 +23,7 @@
     .tab.active { background: #075bd8; color: white; }
     .form-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
     input, select { width: 100%; padding: 17px; border: 1px solid #d7e3f5; border-radius: 12px; font-size: 15px; }
-    .search-btn { grid-column: span 5; padding: 18px; background: #075bd8; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 800; }
+    .search-btn { grid-column: span 5; padding: 18px; background: #075bd8; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer; }
     section { padding: 55px 6%; }
     .features, .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
     .feature, .service { background: white; padding: 25px; border-radius: 18px; box-shadow: 0 8px 25px rgba(0,0,0,.08); }
@@ -32,18 +32,23 @@
     .destination { height: 260px; border-radius: 18px; overflow: hidden; position: relative; color: white; background-size: cover; background-position: center; box-shadow: 0 8px 25px rgba(0,0,0,.12); }
     .destination div { position: absolute; bottom: 0; width: 100%; padding: 22px; background: linear-gradient(transparent, rgba(0,0,0,.78)); }
     .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .results-wrap { background: #fff; border-radius: 22px; box-shadow: 0 8px 25px rgba(0,0,0,.08); padding: 26px; }
+    .results-head { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
+    .flight-card { display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 16px; align-items: center; border: 1px solid #d7e3f5; border-radius: 16px; padding: 18px; margin: 14px 0; background: #f9fcff; }
+    .flight-card h3 { color: #075bd8; margin-bottom: 6px; }
+    .badge { background: #e8f1ff; color: #075bd8; border-radius: 999px; padding: 7px 12px; font-weight: 800; display: inline-block; }
+    .price { font-size: 28px; color: #06295c; font-weight: 900; }
+    .muted { color: #60708a; font-size: 14px; }
+    .loading, .empty { padding: 20px; background: #eef5ff; border-radius: 14px; color: #06295c; font-weight: 700; }
     footer { background: #06295c; color: white; padding: 55px 6% 24px; }
     .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 28px; margin-bottom: 30px; }
     footer a { display: block; color: #d9e8ff; text-decoration: none; margin: 10px 0; }
-    @media (max-width: 800px) { header { padding: 14px 18px; } nav { display: none; } .brand img { width: 88px; height: 68px; } .brand h2 { font-size: 20px; } .hero { padding: 60px 18px; } .hero h1 { font-size: 44px; } .hero p { font-size: 22px; } .tabs, .form-grid, .features, .cards, .services, .footer-grid { grid-template-columns: 1fr; } .search-btn { grid-column: span 1; } }
+    @media (max-width: 800px) { header { padding: 14px 18px; } nav { display: none; } .brand img { width: 88px; height: 68px; } .brand h2 { font-size: 20px; } .hero { padding: 60px 18px; } .hero h1 { font-size: 44px; } .hero p { font-size: 22px; } .tabs, .form-grid, .features, .cards, .services, .footer-grid, .flight-card { grid-template-columns: 1fr; } .search-btn { grid-column: span 1; } .results-head { align-items: flex-start; flex-direction: column; } }
   </style>
 </head>
 <body>
 <header>
-  <div class="brand">
-    <img src="logo.png" alt="Sidra Tourism Logo" />
-    <div><h2>SIDRA TOURISM</h2><small>Travel Beyond Expectations</small></div>
-  </div>
+  <div class="brand"><img src="logo.png" alt="Sidra Tourism Logo" /><div><h2>SIDRA TOURISM</h2><small>Travel Beyond Expectations</small></div></div>
   <nav><a href="#">Home</a><a href="#flights">Flights</a><a href="#hotels">Hotels</a><a href="#cars">Car Rentals</a><a href="#contact">Contact</a></nav>
   <a class="btn" href="#login">Login</a>
 </header>
@@ -54,16 +59,69 @@
     <div class="search-box" id="flights">
       <div class="tabs"><div class="tab active">✈ Flights</div><div class="tab">🏨 Hotels</div><div class="tab">🚗 Cars</div></div>
       <div class="form-grid">
-        <input placeholder="From city" /><input placeholder="To city" /><input type="date" /><input type="date" />
-        <select><option>1 Passenger, Economy</option><option>2 Passengers, Economy</option><option>Business Class</option></select>
-        <button class="search-btn">Search Flights</button>
+        <input id="fromCity" placeholder="From city e.g. DOH" />
+        <input id="toCity" placeholder="To city e.g. LHR" />
+        <input id="departureDate" type="date" />
+        <input id="returnDate" type="date" />
+        <select id="passengers"><option value="1">1 Passenger, Economy</option><option value="2">2 Passengers, Economy</option><option value="business">Business Class</option></select>
+        <button class="search-btn" onclick="searchFlights()">Search Flights</button>
       </div>
     </div>
   </section>
+  <section id="results-section" style="display:none;"><div class="results-wrap"><div class="results-head"><div><h2 class="section-title" style="margin-bottom:6px;">Available Flights</h2><p class="muted" id="resultsSummary">Search results from Sidra Tourism booking engine.</p></div><button class="btn" onclick="document.getElementById('flights').scrollIntoView({behavior:'smooth'})">Modify Search</button></div><div id="flightResults"></div></div></section>
   <section><div class="features"><div class="feature"><h3>Best Price Guarantee</h3><p>Competitive travel rates for every destination.</p></div><div class="feature"><h3>24/7 Support</h3><p>Professional support whenever you need travel assistance.</p></div><div class="feature"><h3>Secure Booking</h3><p>Safe, smooth, and reliable booking experience.</p></div><div class="feature"><h3>Worldwide Coverage</h3><p>Flights, hotels and car rentals across global destinations.</p></div></div></section>
   <section><h2 class="section-title">Popular Destinations</h2><div class="cards"><div class="destination" style="background-image:url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80')"><div><h3>Dubai</h3><p>From $320</p></div></div><div class="destination" style="background-image:url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80')"><div><h3>London</h3><p>From $450</p></div></div><div class="destination" style="background-image:url('https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80')"><div><h3>Istanbul</h3><p>From $380</p></div></div><div class="destination" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80')"><div><h3>Maldives</h3><p>From $600</p></div></div></div></section>
-  <section><h2 class="section-title">Our Services</h2><div class="services"><div class="service" id="hotels"><h3>Flight Booking</h3><p>Search and book flights with professional travel support.</p><br><button class="btn">Search Flights</button></div><div class="service"><h3>Hotel Booking</h3><p>Find comfortable hotels for business and leisure travel.</p><br><button class="btn">Search Hotels</button></div><div class="service" id="cars"><h3>Car Rentals</h3><p>Book rental cars for airport pickup and city travel.</p><br><button class="btn">Rent a Car</button></div></div></section>
+  <section><h2 class="section-title">Our Services</h2><div class="services"><div class="service" id="hotels"><h3>Flight Booking</h3><p>Search and book flights with professional travel support.</p><br><button class="btn" onclick="document.getElementById('flights').scrollIntoView({behavior:'smooth'})">Search Flights</button></div><div class="service"><h3>Hotel Booking</h3><p>Find comfortable hotels for business and leisure travel.</p><br><button class="btn">Search Hotels</button></div><div class="service" id="cars"><h3>Car Rentals</h3><p>Book rental cars for airport pickup and city travel.</p><br><button class="btn">Rent a Car</button></div></div></section>
 </main>
 <footer id="contact"><div class="footer-grid"><div><h2>SIDRA TOURISM</h2><p>Travel Beyond Expectations</p><br><p>Your trusted travel partner for flights, hotels and car rentals.</p></div><div><h3>Quick Links</h3><a href="#">Home</a><a href="#flights">Flights</a><a href="#hotels">Hotels</a><a href="#cars">Car Rentals</a></div><div><h3>Support</h3><a href="#">Help Center</a><a href="#">My Bookings</a><a href="#">Cancellation Policy</a><a href="#">Terms & Conditions</a></div><div><h3>Contact</h3><p>📞 +971 50 123 4567</p><p>✉ info@sidratourism.com</p><p>📍 Dubai, UAE</p></div></div><p style="text-align:center;">© 2026 Sidra Tourism. All rights reserved.</p></footer>
+<script>
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('departureDate').value = today;
+
+  async function searchFlights() {
+    const from = document.getElementById('fromCity').value.trim().toUpperCase() || 'DOH';
+    const to = document.getElementById('toCity').value.trim().toUpperCase() || 'LHR';
+    const departureDate = document.getElementById('departureDate').value || today;
+    const resultsSection = document.getElementById('results-section');
+    const resultsBox = document.getElementById('flightResults');
+    const summary = document.getElementById('resultsSummary');
+
+    resultsSection.style.display = 'block';
+    resultsBox.innerHTML = '<div class="loading">Searching best available flights...</div>';
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+    try {
+      const response = await fetch(`/api/flight-search?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&departureDate=${encodeURIComponent(departureDate)}`);
+      const data = await response.json();
+      const flights = data.results || [];
+      summary.textContent = `${flights.length} result(s) found for ${from} to ${to}.`;
+
+      if (!flights.length) {
+        resultsBox.innerHTML = '<div class="empty">No flights found. Try DOH to LHR or leave fields blank.</div>';
+        return;
+      }
+
+      resultsBox.innerHTML = flights.map((flight) => `
+        <div class="flight-card">
+          <div><h3>${flight.airline || 'Sidra Airline'}</h3><p class="muted">${flight.flight || 'Flight'} • ${flight.status || 'Available'}</p></div>
+          <div><strong>${flight.from || from} → ${flight.to || to}</strong><p class="muted">${flight.departure || '--:--'} - ${flight.arrival || '--:--'}</p></div>
+          <div><span class="badge">${flight.stops || 'Direct'}</span><p class="muted" style="margin-top:8px;">${flight.duration || 'Duration TBC'}</p></div>
+          <div><div class="price">${flight.currency || 'USD'} ${flight.price || 'N/A'}</div><button class="btn" onclick='bookFlight(${JSON.stringify(flight).replace(/'/g, "&apos;")})'>Book Now</button></div>
+        </div>
+      `).join('');
+    } catch (error) {
+      resultsBox.innerHTML = '<div class="empty">API connection error. Please try again after server restart.</div>';
+    }
+  }
+
+  async function bookFlight(flight) {
+    try {
+      await fetch('/api/booking-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ flight, source: 'website' }) });
+      alert(`Booking request received for ${flight.flight}. Sidra Tourism will contact you shortly.`);
+    } catch (error) {
+      alert('Booking request saved locally. Please contact Sidra Tourism support.');
+    }
+  }
+</script>
 </body>
 </html>
