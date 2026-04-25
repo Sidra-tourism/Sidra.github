@@ -8,3 +8,6 @@ https://www.sidratourism.com
 ## 📡 API Endpoints
 
 ### Health Check
+
+```http
+GET /
