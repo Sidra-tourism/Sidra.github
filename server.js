@@ -68,17 +68,16 @@ app.post("/api/apply-coupon", (req, res) => {
   res.json({ valid: false, discount: 0 });
 });
 
-app.post("/api/create-payment", (req, res) => {
-  const amount = Number(req.body.amount || 0);
-  res.json({
-    status: "ready",
-    provider: "PayPal",
-    amount,
-    message: "PayPal client-side checkout is ready. Add PAYPAL_CLIENT_ID to frontend when available."
-  });
+app.post("/api/create-payment", (_req, res) => {
+  // No payment provider is integrated yet. Do not imply a charge or payment is possible.
+  res.status(501).json({ error: "Online payments are not available. Contact Sidra Tourism for a confirmed quotation." });
 });
 
 app.post("/api/confirm-booking", async (req, res) => {
+  // The existing bookings array is ephemeral, not a production booking system.
+  if (process.env.ENABLE_LIVE_BOOKINGS !== "true") {
+    return res.status(503).json({ error: "Online booking confirmation is not active. Contact Sidra Tourism to request a booking." });
+  }
   const data = req.body || {};
   const reference = `SIDRA-${Date.now()}`;
   const booking = { reference, createdAt: new Date().toISOString(), ...data };
@@ -108,14 +107,22 @@ app.post("/api/contact", async (req, res) => {
 
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body || {};
-  if (email === (process.env.ADMIN_EMAIL || "admin@sidratourism.com") && password === (process.env.ADMIN_PASSWORD || "admin123")) {
-    return res.json({ status: "ok", role: "admin" });
+  if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD || !process.env.ADMIN_API_TOKEN) {
+    return res.status(503).json({ error: "Admin login is not configured." });
   }
-  res.json({ status: "ok", role: "customer" });
+  if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+    return res.json({ status: "ok", role: "admin", token: process.env.ADMIN_API_TOKEN });
+  }
+  return res.status(401).json({ error: "Invalid credentials." });
 });
 
 app.get("/api/admin/bookings", (req, res) => {
-  res.json({ status: "working", bookings, contacts });
+  const token = process.env.ADMIN_API_TOKEN;
+  if (!token || req.get("authorization") !== `Bearer ${token}`) {
+    return res.status(401).json({ error: "Unauthorized." });
+  }
+  res.set("Cache-Control", "no-store");
+  return res.json({ status: "working", bookings, contacts });
 });
 
 app.get("/api/ticket-validation", (req, res) => {
