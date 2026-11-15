@@ -38,7 +38,9 @@ alter table public.sidra_audit_events enable row level security;
 revoke all on public.sidra_profiles, public.sidra_user_roles, public.sidra_service_requests, public.sidra_audit_events from anon, authenticated;
 grant select,insert,update,delete on public.sidra_profiles, public.sidra_user_roles, public.sidra_service_requests, public.sidra_audit_events to service_role;
 grant usage,select on sequence public.sidra_audit_events_id_seq to service_role;
-create or replace function public.sidra_profile_on_signup()
+create schema if not exists sidra_private;
+revoke all on schema sidra_private from public, anon, authenticated;
+create or replace function sidra_private.sidra_profile_on_signup()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   insert into public.sidra_profiles (id,display_name)
@@ -47,8 +49,9 @@ begin
   return new;
 end;
 $$;
+revoke execute on function sidra_private.sidra_profile_on_signup() from public, anon, authenticated;
 drop trigger if exists sidra_profile_signup on auth.users;
-create trigger sidra_profile_signup after insert on auth.users for each row execute function public.sidra_profile_on_signup();
+create trigger sidra_profile_signup after insert on auth.users for each row execute function sidra_private.sidra_profile_on_signup();
 -- Existing users can be backfilled with this safe additive operation:
 insert into public.sidra_profiles(id) select id from auth.users on conflict (id) do nothing;
 -- Owner bootstrap is intentionally manual: after verifying exact Sidra Auth user UUID,
