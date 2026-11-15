@@ -338,3 +338,21 @@
 @media(prefers-reduced-motion:reduce){
   .editorial-layout .editorial-rail,.editorial-layout .stay-types-rail,.editorial-layout .package-rail{scroll-behavior:auto}
 }
+
+
+/* Match the reference's uncluttered header: primary pages remain available in the footer. */
+.editorial-layout .site-header .nav{display:none!important}
+@media(max-width:700px){
+  .editorial-layout header.site-header{
+    display:flex!important;flex-wrap:wrap!important;align-items:center;
+    min-height:0!important;row-gap:2px!important;
+    padding:7px 12px 5px!important;
+  }
+  .editorial-layout .site-header .brand{order:1;flex:1 1 60%;min-width:0}
+  .editorial-layout .site-header .account-icon{order:2;flex:none;margin-left:auto}
+  .editorial-layout .shop-menu{order:3;display:block!important;flex:1 1 auto}
+  .editorial-layout .shop-toggle{font-size:11px!important;padding:7px 5px}
+  .editorial-layout .shop-dropdown{top:100%;width:min(210px,90vw)}
+  .editorial-layout .header-tools{order:4;margin-left:auto;gap:15px}
+  .editorial-layout .header-trips{display:inline-block;font-size:11px}
+}
