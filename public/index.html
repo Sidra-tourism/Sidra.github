@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="/sidra-premium.css?v=20261116">
 <link rel="stylesheet" href="/sidra-ota.css?v=20261116b">
 <link rel="stylesheet" href="/sidra-editorial.css?v=20261116">
+<link rel="stylesheet" href="/sidra-mobile-booking.css?v=20261116c">
 </head>
 <body class="editorial-layout">
 <header class="site-header" id="home">
@@ -27,7 +28,7 @@
 <div class="hero-intro"><div class="hero-main-copy"><span class="hero-kicker">EXPLORE MORE WITH SIDRA TOURISM</span><h1 id="heroTitle">The world is waiting.<br><span>Where will you go?</span></h1><p>Flights, stays and unforgettable journeys, made simple.</p></div></div>
 <div class="search-card site-search" id="flights"><p role="note" style="margin-bottom:15px;padding:12px 15px;background:#fff5e8;color:#6d4300;border-radius:10px;font-size:13px;font-weight:700">Select your departure and destination countries and airports, then your travel dates. Only verified supplier fares may be shown. Online ticket payment and automatic issuance are not yet enabled.</p><div class="tabs"><div class="tab active" data-tab="flights" onclick="switchMain('flights')">Flights</div><div class="tab" data-tab="hotels" onclick="switchMain('hotels')">Hotels</div><div class="tab" data-tab="cars" onclick="switchMain('cars')">Cars</div></div>
 <div id="flightArea"><div class="trip-tabs"><div class="trip active" data-trip="oneway" onclick="setTrip('oneway')">One Way</div><div class="trip" data-trip="roundtrip" onclick="setTrip('roundtrip')">Round Trip</div><div class="trip" data-trip="multicity" onclick="setTrip('multicity')">Multi-City</div></div>
-<datalist id="airportCountries"></datalist><div id="normalTrip" class="grid"><div class="field"><label for="fromCountry">Departure country</label><input id="fromCountry" placeholder="Choose or type departure country" list="airportCountries" autocomplete="off" required></div><div class="field"><label for="fromCity">Departure airport (IATA code)</label><input id="fromCity" placeholder="Type city then select airport" oninput="suggest('fromCity')" autocomplete="off" maxlength="40" required><div class="suggestions" id="fromCitySuggestions"></div></div><div class="field"><label for="toCountry">Destination country</label><input id="toCountry" placeholder="Choose or type arrival country" list="airportCountries" autocomplete="off" required></div><div class="field"><label for="toCity">Destination airport (IATA code)</label><input id="toCity" placeholder="Type city then select airport" oninput="suggest('toCity')" autocomplete="off" maxlength="40" required><div class="suggestions" id="toCitySuggestions"></div></div><div class="field"><label>Departure</label><input id="departureDate" type="date" required></div><div class="field" id="returnField" style="display:none"><label>Return</label><input id="returnDate" type="date"></div><div class="field"><label>Passengers</label><div class="pax-display" onclick="togglePax()"><span id="paxText">1 Adult</span><span>⌄</span></div><div class="pax-box" id="paxBox"><div class="pax-row"><div><b>Adults</b><p class="muted">12+ years</p></div><div class="counter"><button onclick="changePax('adults',-1)">-</button><b id="adultCount">1</b><button onclick="changePax('adults',1)">+</button></div></div><div class="pax-row"><div><b>Children</b><p class="muted">2-11 years</p></div><div class="counter"><button onclick="changePax('children',-1)">-</button><b id="childCount">0</b><button onclick="changePax('children',1)">+</button></div></div><div id="childAges" class="age-list"></div><button class="btn" style="width:100%;margin-top:12px" onclick="togglePax()">Done</button></div></div><p id="searchMessage" role="alert" aria-live="polite" style="grid-column:1/-1;font-size:14px;font-weight:700"></p><button class="search-btn" onclick="searchFlights()">Search</button></div>
+<datalist id="airportCountries"></datalist><div id="normalTrip" class="grid"><div class="field"><label for="fromCountry">Departure country</label><input id="fromCountry" placeholder="Choose or type departure country" list="airportCountries" autocomplete="off" required></div><div class="field"><label for="fromCity">Leaving from</label><input id="fromCity" placeholder="City or airport" oninput="suggest('fromCity')" autocomplete="off" maxlength="40" required><div class="suggestions" id="fromCitySuggestions"></div></div><div class="field"><label for="toCountry">Destination country</label><input id="toCountry" placeholder="Choose or type arrival country" list="airportCountries" autocomplete="off" required></div><div class="field"><label for="toCity">Going to</label><input id="toCity" placeholder="City or airport" oninput="suggest('toCity')" autocomplete="off" maxlength="40" required><div class="suggestions" id="toCitySuggestions"></div></div><div class="field"><label>Departure</label><input id="departureDate" type="date" required></div><div class="field" id="returnField" style="display:none"><label>Return</label><input id="returnDate" type="date"></div><div class="field"><label>Passengers</label><div class="pax-display" onclick="togglePax()"><span id="paxText">1 Adult</span><span>⌄</span></div><div class="pax-box" id="paxBox"><div class="pax-row"><div><b>Adults</b><p class="muted">12+ years</p></div><div class="counter"><button onclick="changePax('adults',-1)">-</button><b id="adultCount">1</b><button onclick="changePax('adults',1)">+</button></div></div><div class="pax-row"><div><b>Children</b><p class="muted">2-11 years</p></div><div class="counter"><button onclick="changePax('children',-1)">-</button><b id="childCount">0</b><button onclick="changePax('children',1)">+</button></div></div><div id="childAges" class="age-list"></div><button class="btn" style="width:100%;margin-top:12px" onclick="togglePax()">Done</button></div></div><p id="searchMessage" role="alert" aria-live="polite" style="grid-column:1/-1;font-size:14px;font-weight:700"></p><button class="search-btn" onclick="searchFlights()">Search</button></div>
 <div id="multiTrip" class="multi-box"><div id="multiRows"></div><button class="btn light" onclick="addMultiRow()">+ Add another country / city</button><button class="search-btn" style="width:100%;margin-top:12px" onclick="searchFlights()">Search Multi-City</button></div></div>
 <div id="hotelArea" style="display:none" class="grid"><div class="field"><label>Destination</label><input id="hotelDestination" placeholder="Doha"></div><div class="field"><label>Check-in</label><input id="checkIn" type="date"></div><div class="field"><label>Check-out</label><input id="checkOut" type="date"></div><button class="search-btn" onclick="searchHotels()">Search Hotels</button></div>
 <div id="carArea" style="display:none" class="grid"><div class="field"><label>Pickup Location</label><input id="pickupLocation" placeholder="Doha Airport"></div><div class="field"><label>Pickup</label><input id="pickupDate" type="date"></div><div class="field"><label>Drop-off</label><input id="dropoffDate" type="date"></div><button class="search-btn" onclick="searchCars()">Search Cars</button></div>
@@ -150,7 +151,7 @@ function setTrip(t){
 }
 function addMultiRow(){
   const row=document.createElement('div'); row.className='multi-row';
-  for(const placeholder of ['Departure country','Departure IATA airport code','Arrival country','Arrival IATA airport code']){
+  for(const placeholder of ['Departure country','Departure city or airport','Arrival country','Arrival city or airport']){
     const input=document.createElement('input'); input.placeholder=placeholder; input.required=true; input.maxLength=80;
     row.appendChild(input);
   }
@@ -177,7 +178,7 @@ function suggest(id){
 function selectAirport(id, code){
   const airport=airports.find(a=>a[2]===code);
   if(!airport)return;
-  $id(id).value=code;
+  $id(id).value=airport[0]+' ('+airport[2]+') — '+airport[3];
   $id(id==='fromCity'?'fromCountry':'toCountry').value=airport[1];
   $id(id+'Suggestions').style.display='none';clearResults();statusMessage('');
 }
@@ -203,6 +204,12 @@ function requireField(id,label){
   if(!value){statusMessage('Please select '+label+' before searching.');el.focus();return null;}
   return value;
 }
+function airportCode(input){
+  const text=String(input||'').trim(),match=text.match(/\(([A-Za-z]{3})\)/);
+  if(match)return match[1].toUpperCase();
+  const exact=airports.find(a=>a[0].toLowerCase()===text.toLowerCase()||a[3].toLowerCase()===text.toLowerCase());
+  return exact?exact[2]:text.toUpperCase();
+}
 function validateFlightForm(){
   statusMessage('');
   const fromCountry=requireField('fromCountry','a departure country');if(fromCountry===null)return null;
@@ -210,9 +217,9 @@ function validateFlightForm(){
   const toCountry=requireField('toCountry','an arrival country');if(toCountry===null)return null;
   const toText=requireField('toCity','an arrival airport');if(toText===null)return null;
   const date=requireField('departureDate','a departure date');if(date===null)return null;
-  const from=fromText.toUpperCase(),to=toText.toUpperCase();
+  const from=airportCode(fromText),to=airportCode(toText);
   if(!/^[A-Z]{3}$/.test(from)||!/^[A-Z]{3}$/.test(to)){
-    statusMessage('Select airports from the suggestions or enter their three-letter IATA codes.');return null;
+    statusMessage('Choose both departure and arrival airports from the suggestions.');return null;
   }
   if(from===to){statusMessage('Departure and arrival airports must be different.');return null;}
   const origin=airports.find(a=>a[2]===from),dest=airports.find(a=>a[2]===to);
@@ -282,10 +289,10 @@ function showMulti(){
     const x=rows[i].querySelectorAll('input');
     const values=Array.from(x).map(v=>v.value.trim());
     if(values.some(x=>!x)){statusMessage('Complete all countries, airports and dates in segment '+(i+1)+'.');clearResults();return;}
-    if(!/^[A-Za-z]{3}$/.test(values[1])||!/^[A-Za-z]{3}$/.test(values[3])||values[1].toUpperCase()===values[3].toUpperCase()||!dateValid(values[4])||values[4]<today){
-      statusMessage('Please correct airport codes and dates in segment '+(i+1)+'.');clearResults();return;
+    if(!/^[A-Z]{3}$/.test(airportCode(values[1]))||!/^[A-Z]{3}$/.test(airportCode(values[3]))||airportCode(values[1])===airportCode(values[3])||!dateValid(values[4])||values[4]<today){
+      statusMessage('Please check the airports and travel date for segment '+(i+1)+'.');clearResults();return;
     }
-    details.push('Segment '+(i+1)+': '+values[1].toUpperCase()+' ('+values[0]+') to '+values[3].toUpperCase()+' ('+values[2]+') on '+values[4]);
+    details.push('Segment '+(i+1)+': '+airportCode(values[1])+' ('+values[0]+') to '+airportCode(values[3])+' ('+values[2]+') on '+values[4]);
   }
   statusMessage('');
   $id('summary').textContent='Multi-city trip — quotation required';
@@ -311,4 +318,5 @@ document.addEventListener('click',e=>{
 </script>
 <script defer src="/sidra-ota.js?v=20261116b"></script>
 <script defer src="/sidra-editorial.js?v=20261116"></script>
+<script type="module" src="/sidra-mobile-booking.js?v=20261116c"></script>
 </body></html>
