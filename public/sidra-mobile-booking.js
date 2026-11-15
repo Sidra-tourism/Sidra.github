@@ -68,6 +68,13 @@ function enhanceFlights(){
   });
   pair('departureDate','returnDate',1,3);
   addDateSummary('departureDate','departureDate','returnDate','flightDatesSummary');
+  const refreshFlightSummary=()=>{
+    const selected=tripTabs?.querySelector('[data-trip].active')?.dataset.trip||'oneway';
+    const departure=value('departureDate'),ret=selected==='roundtrip'?value('returnDate'):'';
+    $('flightDatesSummary').textContent=departure?formatTravelRange(departure,ret):'Choose dates';
+  };
+  // This closure is called after tripTabs has been initialized below.
+  ['departureDate','returnDate'].forEach(id=>$(id)?.addEventListener('change',refreshFlightSummary));
   const pax=$('paxBox')?.closest('.field');
   const cabin=document.createElement('div');cabin.className='field sidra-flight-cabin sidra-mobile-field';
   cabin.innerHTML='<label for="sidraFlightCabin">Cabin class</label><select id="sidraFlightCabin"><option>Economy</option><option>Premium economy</option><option>Business</option><option>First class</option></select>';
@@ -80,8 +87,9 @@ function enhanceFlights(){
     el.dataset.sidraTrip=el.dataset.trip;
     el.tabIndex=0;el.setAttribute('role','button');
     el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});
-    el.addEventListener('click',()=>summary('departureDate',el.dataset.trip==='roundtrip'?'returnDate':null,'flightDatesSummary'));
+    el.addEventListener('click',refreshFlightSummary);
   });
+  refreshFlightSummary();
   const swap=document.createElement('button');swap.className='sidra-airport-swap';swap.type='button';
   swap.textContent='⇅';swap.setAttribute('aria-label','Swap departure and destination airports');
   $('toCity')?.closest('.field')?.append(swap);
@@ -250,6 +258,10 @@ function setupCruises(){
 function initialize(){
   document.body.classList.add('sidra-mobile-search-ready');
   enhanceFlights();enhanceHotels();enhanceCars();setupPackages();setupExperiences();setupCruises();
+  // Allow safe deep links to a selected search category for QA and customer sharing.
+  const category=new URLSearchParams(window.location.search).get('category');
+  if(['flights','hotels','cars','holidays','experiences','cruises'].includes(category)&&typeof window.switchMain==='function')
+    window.switchMain(category,true);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});
 else initialize();
