@@ -59,7 +59,7 @@ test('car rental supports distinct drop-off and pickup times',()=>{
   assert.match(js,/data-car-mode/);
   assert.match(js,/Rental cars/);
   assert.match(js,/Airport transportation/);
-  assert.match(js,/Car rental quotation request/);
+  assert.match(ota,/Car rental quotation request/);
 });
 
 test('packages can combine flights hotels and cars while remaining quotation only',()=>{
