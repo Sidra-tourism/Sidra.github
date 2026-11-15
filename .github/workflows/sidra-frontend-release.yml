@@ -1,0 +1,35 @@
+name: Sidra frontend-only release safety checks
+on:
+  push:
+    branches: [release/sidra-frontend-20261116, main]
+    paths:
+      - 'public/index.html'
+      - 'public/sidra-premium.css'
+      - 'public/sidra-ota.css'
+      - 'public/sidra-ota.js'
+      - 'test/frontend-release.test.js'
+      - 'test/flight-safety.test.js'
+      - '.github/workflows/sidra-frontend-release.yml'
+  pull_request:
+    paths:
+      - 'public/index.html'
+      - 'public/sidra-ota.css'
+      - 'public/sidra-ota.js'
+      - 'test/frontend-release.test.js'
+      - '.github/workflows/sidra-frontend-release.yml'
+permissions:
+  contents: read
+jobs:
+  frontend-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check script syntax
+        run: |
+          node --check server.js
+          node --check public/sidra-ota.js
+      - name: Run all site checks
+        run: node --test test/*.test.js
