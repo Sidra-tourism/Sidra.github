@@ -10,11 +10,11 @@ test('reference-inspired page uses the requested compact destination-search layo
   assert.match(html,/<body class="editorial-layout">/);
   assert.match(html,/class="site-header"/);
   assert.match(html,/Shop travel/);
-  assert.match(html,/class="site-search"/);
+  assert.match(html,/class="search-card site-search"/);
   assert.match(html,/sidra-editorial\.css\?v=20261116/);
   assert.match(html,/sidra-editorial\.js\?v=20261116/);
   assert.match(css,/\.editorial-layout \.hero/);
-  assert.match(css,/\.site-search \.ota-tabs/);
+  assert.match(css,/\.site-search>\.tabs\.ota-tabs/);
 });
 
 test('original Sidra brand and booking categories are preserved and expanded',()=>{
