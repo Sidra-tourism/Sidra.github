@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Sidra Tourism — mobile layout inspection</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#f2f7fe;background:#132541}
+*{box-sizing:border-box}body{margin:0;padding:18px;min-height:100vh}
+header{max-width:1250px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+header h1{font-size:20px;letter-spacing:-.02em}header p{font-size:12px;color:#b4c9e6;margin:5px 0}
+a{color:#a7e7ff}.layout{max-width:1260px;margin:22px auto;display:flex;justify-content:center;gap:26px;align-items:start;flex-wrap:wrap}
+.controls{width:min(100%,280px);padding:24px;background:#1b3556;border:1px solid #406489;border-radius:18px}
+.controls h2{font-size:17px;margin:0 0 14px}.controls p{font-size:12px;color:#c4d7ee;line-height:1.6;margin:15px 0}
+label{display:block;margin:9px 0;font-size:12px;font-weight:750}
+select{width:100%;padding:13px;background:#fff;color:#213e59;border:0;border-radius:10px;font:inherit}
+.phone{width:390px;max-width:100%;background:#101b30;border:9px solid #223147;border-radius:41px;box-shadow:0 30px 70px #0006;overflow:hidden}
+.screen{position:relative;height:824px;max-height:calc(100vh - 140px);background:white;border-radius:29px;overflow:hidden}
+.phone iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.phone-top{position:relative;height:28px;background:#fff;color:#21324b;display:flex;align-items:center;justify-content:center}
+.phone-top:before{content:'';position:absolute;top:7px;width:100px;height:12px;background:#15253d;border-radius:11px}
+@media(max-width:700px){.controls{width:100%;padding:16px}.phone{width:390px}.screen{max-height:77vh}}
+</style></head>
+<body>
+<header><div><h1>Sidra Tourism · mobile layout inspection</h1><p>Responsive browser preview at a 390 px phone viewport. No credentials or payment test data.</p></div><a href="/" rel="noopener">Open full website</a></header>
+<div class="layout">
+<aside class="controls">
+<h2>Choose screen</h2>
+<label for="category">Travel category</label>
+<select id="category">
+<option value="hotels">Hotels / Stays</option>
+<option value="flights">Flights</option>
+<option value="cars">Cars and airport transportation</option>
+<option value="holidays">Packages</option>
+<option value="experiences">Experiences / Things to do</option>
+<option value="cruises">Cruises</option>
+</select>
+<p>This displays the real responsive Sidra page inside a phone-sized browser frame. Use the search tabs and input fields as you would on your phone.</p>
+<p>The live flight, hotel and cruise inventories are not connected. Search results are enquiry-only.</p>
+</aside>
+<div class="phone" aria-label="Phone preview">
+<div class="phone-top" aria-hidden="true"></div>
+<div class="screen"><iframe id="sidraPhone" title="Sidra Tourism mobile website" referrerpolicy="no-referrer" loading="eager" src="/?category=hotels"></iframe></div>
+</div></div>
+<script>
+const selector=document.getElementById('category');
+const allowed=['flights','hotels','cars','holidays','experiences','cruises'];
+const initial=new URLSearchParams(location.search).get('category');
+if(allowed.includes(initial))selector.value=initial;
+function update(){document.getElementById('sidraPhone').src='/?category='+encodeURIComponent(selector.value);}
+selector.addEventListener('change',update);
+update();
+</script>
+</body></html>
