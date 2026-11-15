@@ -12,8 +12,8 @@
   tabs.innerHTML = [
     '<button type="button" role="tab" aria-selected="true" class="tab ota-tab active" data-tab="flights" aria-label="Flights"><span class="ota-icon" aria-hidden="true">✈</span> Flights</button>',
     '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="hotels" aria-label="Hotels"><span class="ota-icon" aria-hidden="true">🏨</span> Hotels</button>',
-    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="holidays" aria-label="Holiday packages"><span class="ota-icon" aria-hidden="true">☀</span> Holidays</button>',
-    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="cars" aria-label="Car rentals"><span class="ota-icon" aria-hidden="true">🚗</span> Cars</button>'
+    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="cars" aria-label="Car rentals"><span class="ota-icon" aria-hidden="true">🚗</span> Cars</button>',
+    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="holidays" aria-label="Holiday packages"><span class="ota-icon" aria-hidden="true">☀</span> Holidays</button>'
   ].join('');
 
   const hotelArea = byId('hotelArea');
@@ -32,7 +32,7 @@
     '<div class="ota-counter-row"><div><strong>Rooms</strong><small>How many rooms?</small></div><div class="ota-counter"><button type="button" data-hotel-type="rooms" data-hotel-step="-1" aria-label="Remove room">−</button><strong id="hotelRooms">1</strong><button type="button" data-hotel-type="rooms" data-hotel-step="1" aria-label="Add room">+</button></div></div>',
     '<button type="button" id="hotelGuestsDone" class="ota-done">Done</button></div></div>',
     '<p id="hotelSearchError" class="ota-form-error" role="status" aria-live="polite"></p>',
-    '<button type="button" class="search-btn ota-hotel-search">Search hotels</button>'
+    '<button type="button" class="search-btn ota-hotel-search">Search</button>'
   ].join('');
 
   const holidayArea = document.createElement('div');
@@ -45,7 +45,7 @@
     '<div class="field hotel-place"><label for="holidayDestination">Destination</label><input id="holidayDestination" placeholder="City or country" maxlength="120"></div>',
     '<div class="field"><label for="holidayStart">Travel from</label><input id="holidayStart" type="date"></div>',
     '<div class="field"><label for="holidayEnd">Travel until</label><input id="holidayEnd" type="date"></div>',
-    '<button type="button" id="holidaySearchButton" class="search-btn">Request holiday quote</button>',
+    '<button type="button" id="holidaySearchButton" class="search-btn">Search</button>',
     '<p id="holidayError" class="ota-form-error" role="status" aria-live="polite"></p>'
   ].join('');
   hotelArea.insertAdjacentElement('afterend', holidayArea);
@@ -169,6 +169,70 @@
   });
   document.addEventListener('keydown', (event) => { if(event.key==='Escape')closeGuests(); });
 
+
+  /* Two car services: rental and point-to-point/airport transport. Quote enquiry only. */
+  const carArea=byId('carArea');
+  carArea.classList.add('ota-car-grid');
+  carArea.setAttribute('role','tabpanel');
+  carArea.setAttribute('aria-label','Car rental and transport search');
+  carArea.innerHTML = [
+    '<div class="car-mode-tabs" role="group" aria-label="Choose car service">',
+    '<button type="button" class="car-mode-btn active" data-car-mode="rent" aria-pressed="true">🚙 &nbsp; Rent a car</button>',
+    '<button type="button" class="car-mode-btn" data-car-mode="transport" aria-pressed="false">🚐 &nbsp; Transport</button></div>',
+    '<div class="car-form-fields" data-car-section="rent">',
+    '<div class="field car-place"><label for="pickupLocation">Pickup location</label><input id="pickupLocation" placeholder="City, airport, or specific location" maxlength="140"></div>',
+    '<div class="field"><label for="pickupDate">Pickup date</label><input id="pickupDate" type="date"></div>',
+    '<div class="field"><label for="dropoffDate">Drop-off date</label><input id="dropoffDate" type="date"></div>',
+    '<div class="field"><label for="carPickupTime">Pickup time</label><input id="carPickupTime" type="time"></div>',
+    '<div class="field car-preference"><label for="carPreference">Preferences (optional)</label><select id="carPreference"><option value="">Any vehicle type</option><option>Economy</option><option>Compact</option><option>SUV</option><option>Luxury</option><option>Van</option></select></div></div>',
+    '<div class="car-form-fields" data-car-section="transport" hidden>',
+    '<div class="field"><label for="transportType">Transport service</label><select id="transportType"><option>Airport transfer</option><option>City transfer</option><option>Chauffeur service</option></select></div>',
+    '<div class="field car-place"><label for="transportPickup">Pickup location</label><input id="transportPickup" placeholder="Airport, hotel, or address" maxlength="140"></div>',
+    '<div class="field car-place"><label for="transportDestination">Destination</label><input id="transportDestination" placeholder="Where are you going?" maxlength="140"></div>',
+    '<div class="field"><label for="transportDate">Travel date</label><input id="transportDate" type="date"></div>',
+    '<div class="field"><label for="transportTime">Pickup time</label><input id="transportTime" type="time"></div>',
+    '<div class="field"><label for="transportPassengers">Passengers</label><select id="transportPassengers"><option value="1">1 passenger</option><option value="2">2 passengers</option><option value="3">3 passengers</option><option value="4">4 passengers</option><option value="5">5 passengers</option><option value="6">6 passengers</option><option value="7">7 passengers</option><option value="8">8 passengers</option></select></div></div>',
+    '<p id="carSearchError" class="ota-form-error" role="status" aria-live="polite"></p>',
+    '<button type="button" class="search-btn ota-car-search">Search</button>'
+  ].join('');
+  let carMode='rent';
+  function switchCarMode(mode){
+    if(!['rent','transport'].includes(mode))return;
+    carMode=mode;byId('carSearchError').textContent='';
+    carArea.querySelectorAll('[data-car-mode]').forEach(button=>{
+      const active=button.dataset.carMode===mode;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));
+    });
+    carArea.querySelectorAll('[data-car-section]').forEach(section=>{section.hidden=section.dataset.carSection!==mode;});
+  }
+  carArea.querySelectorAll('[data-car-mode]').forEach(button=>button.addEventListener('click',()=>switchCarMode(button.dataset.carMode)));
+  for(const id of ['pickupDate','dropoffDate','transportDate'])byId(id).min=localToday();
+  byId('pickupDate').addEventListener('change',()=>{
+    byId('dropoffDate').min=byId('pickupDate').value||localToday();
+    if(byId('dropoffDate').value&&byId('dropoffDate').value<byId('pickupDate').value)byId('dropoffDate').value='';
+  });
+  function searchCarService(){
+    const error=byId('carSearchError');error.textContent='';
+    if(carMode==='rent'){
+      const location=byId('pickupLocation').value.trim(),start=byId('pickupDate').value,end=byId('dropoffDate').value,time=byId('carPickupTime').value;
+      if(location.length<2||!validDate(start)||start<localToday()||!validDate(end)||end<start||!time){
+        error.textContent='Enter a pickup location, valid dates, and a pickup time.';return;
+      }
+      sendWhatsApp('Car rental quotation request',
+        'Pickup: '+location+'\nPickup date: '+start+'\nDrop-off date: '+end+'\nPickup time: '+time+
+        '\nVehicle preference: '+(byId('carPreference').value||'Any'));
+      return;
+    }
+    const start=byId('transportPickup').value.trim(),end=byId('transportDestination').value.trim(),date=byId('transportDate').value,time=byId('transportTime').value;
+    if(start.length<2||end.length<2||start.toLowerCase()===end.toLowerCase()||!validDate(date)||date<localToday()||!time){
+      error.textContent='Enter different pickup and destination locations, a valid date, and a pickup time.';return;
+    }
+    sendWhatsApp('Transport quotation request',
+      'Service: '+byId('transportType').value+'\nPickup: '+start+'\nDestination: '+end+
+      '\nDate: '+date+'\nPickup time: '+time+'\nPassengers: '+byId('transportPassengers').value);
+  }
+  window.searchCars=searchCarService;
+  byId('carArea').querySelector('.ota-car-search').addEventListener('click',searchCarService);
+
   /* Visually preview the sign-in popover. Never send or persist input credentials. */
   const dialog = document.createElement('dialog'); dialog.id = 'quickSignIn'; dialog.className='ota-login-dialog';
   dialog.setAttribute('aria-labelledby','previewSignInTitle');
@@ -179,16 +243,29 @@
     '<label for="previewLoginPassword">Password</label><input id="previewLoginPassword" type="password" autocomplete="current-password" placeholder="Password">',
     '<button class="ota-login-cta" type="submit">Sign in</button>',
     '<p id="quickSignInNotice" role="status">UI preview only. Authentication is not activated; do not enter real credentials.</p>',
-    '<div class="ota-login-links"><a href="/account#recovery">Forgot password?</a><a href="/account#signup">Create account</a></div></form>'
+    '<div class="ota-login-links"><button type="button" id="previewRecovery">Forgot password?</button><button type="button" id="previewSignup">Create new account</button></div></form>',
+    '<section id="quickSignupPreview" class="ota-auth-preview" hidden><h3>Create new account</h3><p>Account registration will become available after secure sign-up is activated.</p><label>Full name<input type="text" placeholder="Full name" disabled></label><label>Email address<input type="email" placeholder="Email address" disabled></label><label>Password<input type="password" placeholder="Choose a password" disabled></label><button type="button" class="ota-go-back">Back to sign in</button></section>',
+    '<section id="quickRecoveryPreview" class="ota-auth-preview" hidden><h3>Forgot password?</h3><p>Password recovery is not yet activated for Sidra Tourism.</p><label>Email address<input type="email" placeholder="Registered email" disabled></label><button type="button" class="ota-go-back">Back to sign in</button></section>'
   ].join('');
   document.querySelector('.site-header').insertAdjacentElement('afterend',dialog);
   const icon=document.querySelector('.site-header .account-icon');
+  const accountLabel = document.createElement('span'); accountLabel.className='account-text'; accountLabel.textContent='Sign in or sign up'; icon.append(accountLabel);
   icon.setAttribute('aria-haspopup','dialog');
   icon.setAttribute('aria-controls','quickSignIn');
   icon.addEventListener('click',(e)=>{e.preventDefault();dialog.showModal();byId('previewLoginIdentifier').focus();});
+  const showAuthPreview = (kind) => {
+    byId('previewLoginForm').hidden = kind !== 'signin';
+    byId('quickSignupPreview').hidden = kind !== 'signup';
+    byId('quickRecoveryPreview').hidden = kind !== 'recover';
+    byId('previewSignInTitle').textContent = kind === 'signup' ? 'Create new account' : kind === 'recover' ? 'Recover your account' : 'Welcome back';
+    byId('previewLoginPassword').value = '';
+  };
+  byId('previewSignup').addEventListener('click',()=>showAuthPreview('signup'));
+  byId('previewRecovery').addEventListener('click',()=>showAuthPreview('recover'));
+  dialog.querySelectorAll('.ota-go-back').forEach(button=>button.addEventListener('click',()=>showAuthPreview('signin')));
   const clearPreview = () => {byId('previewLoginPassword').value = '';byId('previewLoginIdentifier').value='';};
   byId('closeQuickSignIn').addEventListener('click',()=>dialog.close());
-  dialog.addEventListener('close',clearPreview);
+  dialog.addEventListener('close',()=>{clearPreview();showAuthPreview('signin');});
   dialog.addEventListener('click',(e)=>{if(e.target===dialog)dialog.close();});
   byId('previewLoginForm').addEventListener('submit',(e)=>{
     e.preventDefault();clearPreview();
