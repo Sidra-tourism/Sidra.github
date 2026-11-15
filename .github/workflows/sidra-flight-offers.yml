@@ -1,0 +1,30 @@
+name: Sidra read-only flight offers integration tests
+on:
+  push:
+    branches: [feature/sidra-read-only-flight-offers-20261116, main]
+    paths:
+      - 'flight-offers-provider.js'
+      - 'server.js'
+      - 'test/flight-offers-provider.test.js'
+      - '.github/workflows/sidra-flight-offers.yml'
+  pull_request:
+    paths:
+      - 'flight-offers-provider.js'
+      - 'server.js'
+      - 'test/flight-offers-provider.test.js'
+      - '.github/workflows/sidra-flight-offers.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify scripts and safety regression tests
+        run: |
+          node --check server.js
+          test ! -f flight-offers-provider.js || node --check flight-offers-provider.js
+          node --test test/*.test.js
