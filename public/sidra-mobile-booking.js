@@ -267,6 +267,14 @@ function initialize(){
     if(!Object.hasOwn(forms,kind))return;
     if(typeof selectOriginal==='function')selectOriginal(kind,silent);
     for(const [name,id] of Object.entries(forms))$(id).hidden=name!==kind;
+    // Keep the active icon visible inside the horizontally swipeable mobile tabs.
+    const strip=document.querySelector('.site-search .ota-tabs');
+    const active=strip?.querySelector('[data-tab="'+kind+'"]');
+    if(strip&&active&&window.matchMedia?.('(max-width:700px)').matches){
+      const bar=strip.getBoundingClientRect(),tab=active.getBoundingClientRect();
+      const left=strip.scrollLeft+tab.left-bar.left-(bar.width-tab.width)/2;
+      strip.scrollTo({left,behavior:'auto'});
+    }
   };
   // Allow safe deep links to a selected search category for QA and customer sharing.
   const category=new URLSearchParams(window.location.search).get('category');
