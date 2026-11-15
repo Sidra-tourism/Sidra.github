@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
+import { registerMembershipRoutes } from "./lib/membership-routes.js";
 import { validateFlightSearch } from "./flight-policy.js";
 
 const app = express();
@@ -122,6 +123,9 @@ app.get("/api/admin/bookings", (req, res) => {
 app.get("/api/ticket-validation", (req, res) => {
   res.json({ status: "working", message: "Ticket validation endpoint active" });
 });
+
+// Additive, fail-closed Sidra membership account API and owner workspace.
+registerMembershipRoutes(app);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
