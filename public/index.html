@@ -119,6 +119,8 @@ const airports = [
   ['Toronto','Canada','YYZ','Toronto Pearson'],
   ['Sydney','Australia','SYD','Sydney Kingsford Smith']
 ];
+// Public airport names for the user-facing selector; supplier requests still use ISO IATA codes.
+window.sidraAirportChoices=airports;
 const $id = id => document.getElementById(id);
 const today = (() => { const d=new Date(); return String(d.getFullYear())+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); })();
 let trip = 'oneway', pax = {adults:1,children:0};
@@ -242,7 +244,7 @@ function validateFlightForm(){
 function flightDetails(d){
   return 'Trip: '+d.tripType+'\nFrom: '+d.from+' ('+d.fromCountry+')\nTo: '+d.to+' ('+d.toCountry+')'+
     '\nDeparture: '+d.departureDate+(d.returnDate?'\nReturn: '+d.returnDate:'')+
-    '\nAdults: '+d.adults+'\nChildren: '+d.children;
+    '\nAdults: '+d.adults+'\nChildren: '+d.children+(document.getElementById('sidraFlightCabin')?'\nCabin class: '+document.getElementById('sidraFlightCabin').value:'');
 }
 function showLoading(){
   $id('results').style.display='block';
