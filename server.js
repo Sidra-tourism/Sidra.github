@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
+import { validateFlightSearch } from "./flight-policy.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,32 +15,12 @@ app.use(express.static(path.join(__dirname, "public")));
 const bookings = [];
 const contacts = [];
 
-const sampleFlights = [
-  { id: "SIDRA-QR001", airline: "Qatar Airways", flight: "QR001", from: "DOH", to: "LHR", departure: "07:45", arrival: "13:15", duration: "7h 30m", stops: "Direct", price: "450", currency: "USD", status: "Available" },
-  { id: "SIDRA-EK202", airline: "Emirates", flight: "EK202", from: "DOH", to: "LHR", departure: "10:30", arrival: "17:00", duration: "6h 30m", stops: "1 Stop", price: "480", currency: "USD", status: "Available" },
-  { id: "SIDRA-TK1985", airline: "Turkish Airlines", flight: "TK1985", from: "DOH", to: "IST", departure: "11:20", arrival: "15:25", duration: "4h 05m", stops: "Direct", price: "380", currency: "USD", status: "Available" },
-  { id: "SIDRA-FZ020", airline: "Flydubai", flight: "FZ020", from: "DOH", to: "DXB", departure: "14:10", arrival: "16:20", duration: "1h 10m", stops: "Direct", price: "220", currency: "USD", status: "Available" }
-];
-
-const coupons = { SIDRA10: 10, WELCOME20: 20 };
-
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.hostinger.com",
   port: Number(process.env.SMTP_PORT || 465),
   secure: true,
   auth: process.env.EMAIL_USER && process.env.EMAIL_PASS ? { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS } : undefined
 });
-
-function getFallbackFlights(from, to) {
-  const cleanFrom = String(from || "").trim().toUpperCase();
-  const cleanTo = String(to || "").trim().toUpperCase();
-  const filtered = sampleFlights.filter((flight) => {
-    const matchesFrom = !cleanFrom || flight.from.includes(cleanFrom) || flight.airline.toUpperCase().includes(cleanFrom);
-    const matchesTo = !cleanTo || flight.to.includes(cleanTo) || flight.airline.toUpperCase().includes(cleanTo);
-    return matchesFrom && matchesTo;
-  });
-  return filtered.length ? filtered : sampleFlights;
-}
 
 async function sendMailSafe({ to, subject, text }) {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -53,19 +34,43 @@ app.get("/api/health", (req, res) => {
 });
 
 app.get("/api/flight-search", (req, res) => {
-  const from = req.query.from || "DOH";
-  const to = req.query.to || "LHR";
-  res.json({ status: "working", provider: "Sidra Tourism Demo Engine", mode: "stable", results: getFallbackFlights(from, to) });
+  res.set("Cache-Control", "no-store");
+  let criteria;
+  try {
+    criteria = validateFlightSearch(req.query);
+  } catch (error) {
+    return res.status(422).json({
+      code: "INVALID_FLIGHT_SEARCH",
+      error: error.message,
+      results: []
+    });
+  }
+  // Never create quotes or fares without a verified contracted travel provider.
+  return res.status(503).json({
+    code: "FLIGHT_PROVIDER_UNAVAILABLE",
+    message: "Live fares are not connected. Request a verified quote from Sidra Tourism before payment.",
+    criteria,
+    results: [],
+    pricesVerified: false,
+    bookingEnabled: false,
+    paymentEnabled: false
+  });
 });
 
-app.get("/api/flight-status", (req, res) => {
-  res.json({ status: "working", flights: sampleFlights });
+app.get("/api/flight-status", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  return res.status(503).json({
+    code: "FLIGHT_STATUS_PROVIDER_UNAVAILABLE",
+    error: "Real-time flight status requires an authorized provider connection."
+  });
 });
 
-app.post("/api/apply-coupon", (req, res) => {
-  const code = String(req.body.code || "").trim().toUpperCase();
-  if (coupons[code]) return res.json({ valid: true, code, discount: coupons[code] });
-  res.json({ valid: false, discount: 0 });
+app.post("/api/apply-coupon", (_req, res) => {
+  return res.status(503).json({
+    valid: false,
+    code: "FARE_NOT_VERIFIED",
+    error: "Discounts require a verified flight offer."
+  });
 });
 
 app.post("/api/create-payment", (_req, res) => {
@@ -73,25 +78,14 @@ app.post("/api/create-payment", (_req, res) => {
   res.status(501).json({ error: "Online payments are not available. Contact Sidra Tourism for a confirmed quotation." });
 });
 
-app.post("/api/confirm-booking", async (req, res) => {
-  // The existing bookings array is ephemeral, not a production booking system.
-  if (process.env.ENABLE_LIVE_BOOKINGS !== "true") {
-    return res.status(503).json({ error: "Online booking confirmation is not active. Contact Sidra Tourism to request a booking." });
-  }
-  const data = req.body || {};
-  const reference = `SIDRA-${Date.now()}`;
-  const booking = { reference, createdAt: new Date().toISOString(), ...data };
-  bookings.unshift(booking);
-
-  const invoice = `SIDRA TOURISM\nAccredited IATA Agent\n\nBooking Confirmation / Invoice\nReference: ${reference}\nName: ${data.name || "Customer"}\nEmail: ${data.email || "N/A"}\nRoute: ${data.route || "N/A"}\nPassengers: ${data.passengers || "N/A"}\nCoupon: ${data.coupon || "N/A"}\nAmount: ${data.amount || "N/A"}\n\nOffice: Building 615, Al Tobah Street, Muaither, PO Box 1994, Ar-Rayyan, Qatar\nContact: +974 3336 6348\n\nThank you for booking with Sidra Tourism.`;
-
-  const emailResult = await sendMailSafe({
-    to: data.email || process.env.EMAIL_USER,
-    subject: `Booking Confirmation - ${reference}`,
-    text: invoice
-  }).catch((error) => ({ error: error.message }));
-
-  res.json({ status: "confirmed", reference, email: emailResult });
+app.post("/api/confirm-booking", (_req, res) => {
+  // An internal flag is insufficient. Require actual authorized inventory,
+  // payment receipt, issued airline order/PNR and reconciliation first.
+  res.set("Cache-Control", "no-store");
+  return res.status(503).json({
+    code: "TICKETING_NOT_AVAILABLE",
+    error: "Booking confirmations require verified ticketing and payment connections."
+  });
 });
 
 app.post("/api/contact", async (req, res) => {
