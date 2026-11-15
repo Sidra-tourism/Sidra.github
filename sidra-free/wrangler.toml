@@ -1,0 +1,19 @@
+name = "sidra-tourism-independent"
+main = "src/worker.js"
+compatibility_date = "2026-11-15"
+
+[assets]
+directory = "./site"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+# Required before accepting enquiries:
+# 1. Create a D1 database in a DEDICATED Sidra Tourism Cloudflare account.
+# 2. Add the [[d1_databases]] block below with the actual project ID.
+# [[d1_databases]]
+# binding = "SIDRA_DB"
+# database_name = "sidra-tourism"
+# database_id = "REPLACE_WITH_REAL_SIDRA_D1_ID"
+# 3. Set TURNSTILE_SITE_KEY as a dashboard variable.
+# 4. Add TURNSTILE_SECRET_KEY using wrangler secret put.
+# No production domain routes are configured. Existing websites stay untouched.
