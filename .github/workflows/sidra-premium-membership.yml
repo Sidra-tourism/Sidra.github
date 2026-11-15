@@ -9,6 +9,9 @@ on:
       - 'public/member-qr.js'
       - 'public/admin-workspace*'
       - 'public/sidra-premium.css'
+      - 'public/sidra-ota.css'
+      - 'public/sidra-ota.js'
+      - 'test/ota-ui.test.js'
       - 'public/index.html'
       - 'server.js'
       - 'database/sidra_membership.sql'
@@ -21,6 +24,9 @@ on:
       - 'public/member-qr.js'
       - 'public/admin-workspace*'
       - 'public/sidra-premium.css'
+      - 'public/sidra-ota.css'
+      - 'public/sidra-ota.js'
+      - 'test/ota-ui.test.js'
       - 'server.js'
       - 'test/membership*.test.js'
       - '.github/workflows/sidra-premium-membership.yml'
@@ -42,5 +48,6 @@ jobs:
           node --check public/member-qr.js
           node --check public/account.js
           node --check public/admin-workspace.js
+          node --check public/sidra-ota.js
       - name: Unit and fail-closed tests
-        run: node --test test/membership.test.js test/membership-routes.test.js test/membership-design.test.js
+        run: node --test test/membership.test.js test/membership-routes.test.js test/membership-design.test.js test/ota-ui.test.js
