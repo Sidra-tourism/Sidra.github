@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateEnquiry, SERVICES } from '../src/policy.js';
-import { handleRequest } from '../src/worker.js';
+import worker, { handleRequest } from '../src/worker.js';
 const valid = { service: 'flights', fullName: 'Customer Test', email: 'TRAVELER@EXAMPLE.COM', origin: 'Doha', destination: 'Colombo', travelers: 2, travelDate: '2026-12-15' };
 const origin = 'https://sidra-testing.example';
 function request(body, headers = {}) {
@@ -53,4 +53,15 @@ test('enquiry passes security challenge, stores once and does not confirm bookin
 test('no public admin endpoint exists', async () => {
   const r = await handleRequest(new Request(origin + '/api/admin/enquiries'), {});
   assert.equal(r.status, 404);
+});
+
+test('Cloudflare entrypoint ignores ExecutionContext third parameter', async () => {
+  const db = { prepare() { return { bind() { return { async run() {} }; } }; } };
+  const req = request({ ...valid, turnstileToken: 'token-test-123' });
+  const previous = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({success:true});
+  try {
+    const response = await worker.fetch(req, {SIDRA_DB:db,TURNSTILE_SITE_KEY:'site',TURNSTILE_SECRET_KEY:'secret'}, {waitUntil(){}});
+    assert.equal(response.status, 201);
+  } finally { globalThis.fetch = previous; }
 });
