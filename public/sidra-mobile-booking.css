@@ -222,3 +222,29 @@
 @media(prefers-reduced-motion:reduce){
   .editorial-layout .site-search .ota-tab{transition:none!important}
 }
+
+
+/* QA fix: inactive category forms must never leak into the page flow. */
+.editorial-layout .site-search #flightArea[hidden],
+.editorial-layout .site-search #hotelArea[hidden],
+.editorial-layout .site-search #carArea[hidden],
+.editorial-layout .site-search #holidayArea[hidden],
+.editorial-layout .site-search #experiencesArea[hidden],
+.editorial-layout .site-search #cruisesArea[hidden]{display:none!important}
+
+@media(max-width:700px){
+  /* Match the reference's single-row logo/profile header; links remain in page footer. */
+  .editorial-layout.sidra-mobile-search-ready header.site-header{
+    display:flex!important;flex-wrap:nowrap!important;min-height:70px!important;
+    padding:11px 14px!important;gap:8px
+  }
+  .editorial-layout.sidra-mobile-search-ready header.site-header .shop-menu,
+  .editorial-layout.sidra-mobile-search-ready header.site-header .header-tools{display:none!important}
+  .editorial-layout.sidra-mobile-search-ready header.site-header .brand{order:1;flex:1 1 auto}
+  .editorial-layout.sidra-mobile-search-ready header.site-header .account-icon{order:2;flex:none}
+  /* Keep package routes and stay destination readable on narrow screens. */
+  .editorial-layout .sidra-package-fields .field:has(#sidraPackageFrom),
+  .editorial-layout .sidra-package-fields .field:has(#sidraPackageTo),
+  .editorial-layout .sidra-package-fields .field:has(#sidraPackageStay){grid-column:1/-1!important}
+  .editorial-layout .sidra-flight-grid .sidra-manual-airport{margin:0 0 4px}
+}
