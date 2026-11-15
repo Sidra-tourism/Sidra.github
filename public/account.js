@@ -138,8 +138,17 @@ async function init(){
   const response=await fetch('/api/member/config',{cache:'no-store'});
   state.config=await jsonResponse(response);
   if(!state.config.configured){
-    $('signInButton').disabled=true;$('showSignUp').disabled=true;$('showRecovery').disabled=true;
-    notice('Secure Sidra account setup is pending. Sign in, registration, OTP and profile storage are not active yet.','warn');
+    // Visitors can review the create-account and recovery layouts, but cannot
+    // submit credentials or identity information until the Sidra backend is ready.
+    $('signInButton').disabled=true;
+    $('showSignUp').disabled=false;
+    $('showRecovery').disabled=false;
+    $('createAccountButton').disabled=true;
+    for (const id of ['verifyForm','recoveryForm','resetForm']) {
+      const submit=$(id).querySelector('button[type="submit"]');
+      if(submit)submit.disabled=true;
+    }
+    notice('Design preview only: account creation, OTP, password reset and profile storage are not active. You can view the forms, but please do not enter personal details.','warn');
   }else if(!state.config.signupEnabled){
     $('showSignUp').disabled=true;
     notice('Sign in is available. New registrations await verification of Sidra email settings.');
