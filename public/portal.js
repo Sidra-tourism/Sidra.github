@@ -18,10 +18,11 @@ async function api(path, options = {}) {
 }
 function navigate(view) {
   state.view = view;
-  for (const v of ['services', 'requests', 'admin']) $(`${v}Panel`).classList.toggle('hidden', view !== v);
+  for (const v of ['services', 'requests', 'admin', 'profile']) $(`${v}Panel`).classList.toggle('hidden', view !== v);
   document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('selected', b.dataset.view === view));
   if (view === 'requests' && state.user) loadRequests();
   if (view === 'admin' && state.user) loadAdmin();
+  if (view === 'profile' && state.user) loadProfile();
 }
 function renderServices() {
   const grid = $('serviceGrid'); grid.replaceChildren(); $('serviceSelect').replaceChildren();
@@ -42,11 +43,12 @@ function renderAuth() {
   $('authPanel').classList.toggle('hidden', logged);
   $('logout').classList.toggle('hidden', !logged);
   $('adminNav').classList.toggle('hidden', !(logged && staff.has(state.user.role)));
+  $('profileNav').classList.toggle('hidden', !logged);
   $('currentRole').textContent = logged ? `${state.user.role.replaceAll('_', ' ')} • ${state.user.email}` : 'Guest';
   $('signUp').classList.toggle('hidden', !state.config?.customerSignupEnabled);
   $('signIn').disabled = !state.config?.configured;
   $('signUp').disabled = !state.config?.configured;
-  if (!logged && state.view === 'admin') navigate('services');
+  if (!logged && ['admin', 'profile'].includes(state.view)) navigate('services');
   if (logged) message(`Signed in as ${state.user.role.replaceAll('_', ' ')}. Access is restricted to your assigned role.`);
 }
 async function restoreUser() {
@@ -92,6 +94,23 @@ async function createRequest(e) {
   const payload = { service: $('serviceSelect').value, summary: $('summary').value.trim(), details: $('details').value.trim() };
   try { await api('requests', { method: 'POST', body: JSON.stringify(payload) }); $('requestForm').reset(); message('Your enquiry has been received for staff review. This is not a confirmed booking.'); await loadRequests(); } catch (err) { message(err.message, 'error'); }
 }
+async function loadProfile() {
+  if (!state.user) return message('Sign in to view your profile.', 'warn');
+  try {
+    const { profile } = await api('me/profile');
+    $('displayName').value = profile.display_name || '';
+    $('profileEmail').textContent = `Email: ${profile.email}`;
+    $('profileRole').textContent = `Assigned role: ${profile.role.replaceAll('_', ' ')}`;
+  } catch (e) { message(e.message, 'error'); }
+}
+async function saveProfile(e) {
+  e.preventDefault();
+  try {
+    await api('me/profile', { method: 'PATCH', body: JSON.stringify({ displayName: $('displayName').value }) });
+    message('Profile updated successfully.');
+    await loadProfile();
+  } catch (err) { message(err.message, 'error'); }
+}
 async function loadAdmin() {
   $('adminRequests').replaceChildren(); $('adminOverview').replaceChildren();
   if (!staff.has(state.user?.role)) return;
@@ -123,7 +142,7 @@ async function updateRole(e) {
 async function init() {
   document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => navigate(b.dataset.view)));
   $('loginForm').addEventListener('submit', signIn); $('signUp').addEventListener('click', signUp); $('logout').addEventListener('click', logout);
-  $('requestForm').addEventListener('submit', createRequest); $('roleForm').addEventListener('submit', updateRole);
+  $('requestForm').addEventListener('submit', createRequest); $('profileForm').addEventListener('submit', saveProfile); $('roleForm').addEventListener('submit', updateRole);
   try {
     const [config, data] = await Promise.all([json('/api/portal/config'), json('/api/portal/services')]);
     state.config = config; state.services = data.services; renderServices();
