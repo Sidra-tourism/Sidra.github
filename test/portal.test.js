@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { can, parseRequest, canAccessService, validateStatus, SERVICES, buildServerHeaders } from '../lib/portal-core.js';
+import { can, parseRequest, canAccessService, validateStatus, SERVICES, buildServerHeaders, validateDisplayName } from '../lib/portal-core.js';
 
 test('unrecognized role never receives administrative rights', () => {
   assert.equal(can('customer', 'manage_roles'), false);
@@ -43,4 +43,11 @@ test('legacy JWT service role preserves compatibility while secrets remain serve
   const headers = buildServerHeaders('legacy-jwt', true);
   assert.equal(headers.authorization, 'Bearer legacy-jwt');
   assert.equal(headers.prefer, 'resolution=merge-duplicates,return=representation');
+});
+
+test('customer profile display name is validated and safely normalized', () => {
+  assert.equal(validateDisplayName({ displayName: '  Test Customer  ' }), 'Test Customer');
+  assert.throws(() => validateDisplayName({ displayName: '' }), /display name/i);
+  assert.throws(() => validateDisplayName({ displayName: 'A'.repeat(101) }), /display name/i);
+  assert.throws(() => validateDisplayName({ displayName: 'Demo', role: 'super_admin' }), /fields/i);
 });
