@@ -49,7 +49,12 @@ async function loadDashboard(){
 async function signIn(event){
  event.preventDefault();notice('Checking credentials…');
  try{
-  const data=await authFetch('token?grant_type=password',{email:$('loginEmail').value.trim(),password:$('loginPassword').value});
+  const identifier=$('loginEmail').value.trim();
+  if(!identifier.includes('@')){
+    notice('Username sign-in is not available yet. Please use your registered email address.','warn');
+    return;
+  }
+  const data=await authFetch('token?grant_type=password',{email:identifier,password:$('loginPassword').value});
   if(!data.access_token)throw new Error('Verified session was not returned');
   state.token=data.access_token;state.user=null;
   $('loginPassword').value='';
