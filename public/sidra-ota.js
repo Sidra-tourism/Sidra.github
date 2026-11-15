@@ -11,7 +11,7 @@
   tabs.setAttribute('aria-label', 'Choose your travel service');
   tabs.innerHTML = [
     '<button type="button" role="tab" aria-selected="true" class="tab ota-tab active" data-tab="flights" aria-label="Flights"><span class="ota-icon" aria-hidden="true">✈</span> Flights</button>',
-    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="hotels" aria-label="Hotels"><span class="ota-icon" aria-hidden="true">▥</span> Hotels</button>',
+    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="hotels" aria-label="Hotels"><span class="ota-icon" aria-hidden="true">🏨</span> Hotels</button>',
     '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="holidays" aria-label="Holiday packages"><span class="ota-icon" aria-hidden="true">☀</span> Holidays</button>',
     '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="cars" aria-label="Car rentals"><span class="ota-icon" aria-hidden="true">🚗</span> Cars</button>'
   ].join('');
@@ -21,7 +21,7 @@
   hotelArea.setAttribute('role', 'tabpanel');
   hotelArea.setAttribute('aria-label', 'Search hotels');
   hotelArea.innerHTML = [
-    '<div class="field hotel-place"><label for="hotelDestination">Hotel name or destination</label><div class="ota-icon-input"><span aria-hidden="true">▥</span><input id="hotelDestination" placeholder="City, area, or property name" maxlength="120" autocomplete="off"></div></div>',
+    '<div class="field hotel-place"><label for="hotelDestination">Hotel name or destination</label><div class="ota-icon-input"><span aria-hidden="true">🏨</span><input id="hotelDestination" placeholder="City, area, or property name" maxlength="120" autocomplete="off"></div></div>',
     '<div class="field hotel-checkin"><label for="checkIn">Check-in date</label><input id="checkIn" type="date" required></div>',
     '<div class="field hotel-checkout"><label for="checkOut">Check-out date</label><input id="checkOut" type="date" required></div>',
     '<div class="field hotel-occupancy"><label id="hotelGuestLabel">Rooms and guests</label><button type="button" id="hotelGuestTrigger" class="ota-guest-trigger" aria-expanded="false" aria-controls="hotelGuestPanel"><span aria-hidden="true">♙</span><span id="hotelGuestSummary">2 adults · 1 room</span><span aria-hidden="true">⌄</span></button>',
