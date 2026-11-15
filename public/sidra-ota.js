@@ -273,17 +273,17 @@
   dialog.innerHTML = [
     '<div class="ota-login-heading"><div><span class="ota-eyebrow">MY SIDRA ACCOUNT</span><h2 id="previewSignInTitle">Welcome back</h2><p>Your trips, saved guests and travel profile in one place.</p></div><button id="closeQuickSignIn" type="button" aria-label="Close sign-in preview">✕</button></div>',
     '<form id="previewLoginForm" autocomplete="off">',
-    '<label for="previewLoginIdentifier">Username or email address</label><input id="previewLoginIdentifier" type="text" autocomplete="username" placeholder="Email or username">',
+    '<label for="previewLoginIdentifier">Email / Username</label><input id="previewLoginIdentifier" type="text" autocomplete="username" placeholder="Email or username">',
     '<label for="previewLoginPassword">Password</label><input id="previewLoginPassword" type="password" autocomplete="current-password" placeholder="Password">',
+    '<div class="ota-login-links"><button type="button" id="previewSignup">Create a new account</button><button type="button" id="previewRecovery">Forgot password?</button></div>',
     '<button class="ota-login-cta" type="submit">Sign in</button>',
-    '<p id="quickSignInNotice" role="status">UI preview only. Authentication is not activated; do not enter real credentials.</p>',
-    '<div class="ota-login-links"><button type="button" id="previewRecovery">Forgot password?</button><button type="button" id="previewSignup">Create new account</button></div></form>',
-    '<section id="quickSignupPreview" class="ota-auth-preview" hidden><h3>Create new account</h3><p>Account registration will become available after secure sign-up is activated.</p><label>Full name<input type="text" placeholder="Full name" disabled></label><label>Email address<input type="email" placeholder="Email address" disabled></label><label>Password<input type="password" placeholder="Choose a password" disabled></label><button type="button" class="ota-go-back">Back to sign in</button></section>',
+    '<p id="quickSignInNotice" role="status">UI preview only. Authentication is not activated; do not enter real credentials.</p></form>',
+    '<section id="quickSignupPreview" class="ota-auth-preview" hidden><h3>Create a new account</h3><p>Account registration will become available after secure sign-up is activated.</p><label>Full name<input type="text" placeholder="Full name" disabled></label><label>Email address<input type="email" placeholder="Email address" disabled></label><label>Password<input type="password" placeholder="Choose a password" disabled></label><button type="button" class="ota-go-back">Back to sign in</button></section>',
     '<section id="quickRecoveryPreview" class="ota-auth-preview" hidden><h3>Forgot password?</h3><p>Password recovery is not yet activated for Sidra Tourism.</p><label>Email address<input type="email" placeholder="Registered email" disabled></label><button type="button" class="ota-go-back">Back to sign in</button></section>'
   ].join('');
   document.querySelector('.site-header').insertAdjacentElement('afterend',dialog);
   const icon=document.querySelector('.site-header .account-icon');
-  const accountLabel = document.createElement('span'); accountLabel.className='account-text'; accountLabel.textContent='Sign in or sign up'; icon.append(accountLabel);
+  const accountLabel = document.createElement('span'); accountLabel.className='account-text'; accountLabel.textContent='Sign in'; icon.append(accountLabel);
   icon.setAttribute('aria-haspopup','dialog');
   icon.setAttribute('aria-controls','quickSignIn');
   icon.addEventListener('click',(e)=>{e.preventDefault();dialog.showModal();byId('previewLoginIdentifier').focus();});
@@ -292,7 +292,7 @@
     byId('previewLoginForm').hidden = kind !== 'signin';
     byId('quickSignupPreview').hidden = kind !== 'signup';
     byId('quickRecoveryPreview').hidden = kind !== 'recover';
-    byId('previewSignInTitle').textContent = kind === 'signup' ? 'Create new account' : kind === 'recover' ? 'Recover your account' : 'Welcome back';
+    byId('previewSignInTitle').textContent = kind === 'signup' ? 'Create a new account' : kind === 'recover' ? 'Recover your account' : 'Welcome back';
     byId('previewLoginPassword').value = '';
   };
   byId('previewSignup').addEventListener('click',()=>showAuthPreview('signup'));
