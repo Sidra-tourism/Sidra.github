@@ -97,3 +97,19 @@ test('customer sign-in safe preview unchanged',()=>{
   assert.match(ota,/Forgot password\?/);
   assert.match(ota,/Authentication is not activated/);
 });
+
+
+test('inactive travel forms are hidden even when a legacy CSS rule forces flex or grid',()=>{
+  assert.match(js,/\.hidden=name!==kind/);
+  assert.match(js,/const forms=\{flights:'flightArea',hotels:'hotelArea',cars:'carArea'/);
+  for(const id of ['flightArea','hotelArea','carArea','holidayArea','experiencesArea','cruisesArea']){
+    assert.match(css,new RegExp('#'+id+'\\[hidden\\]'),id);
+  }
+});
+
+test('mobile package route inputs occupy full-width rows without clipping',()=>{
+  assert.match(css,/@media\(max-width:700px\)/);
+  for(const id of ['sidraPackageFrom','sidraPackageTo','sidraPackageStay'])
+    assert.match(css,new RegExp(':has\\(#'+id+'\\)'),id);
+  assert.match(css,/\.shop-menu,[\s\S]*\.header-tools\{display:none!important\}/);
+});
