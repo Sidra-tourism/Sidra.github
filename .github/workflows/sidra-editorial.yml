@@ -1,0 +1,35 @@
+name: Sidra editorial homepage safeguards
+on:
+  push:
+    branches: [feature/sidra-reference-layout-20261116, main]
+    paths:
+      - 'public/index.html'
+      - 'public/sidra-ota.js'
+      - 'public/sidra-editorial.css'
+      - 'public/sidra-editorial.js'
+      - 'test/reference-layout.test.js'
+      - '.github/workflows/sidra-editorial.yml'
+  pull_request:
+    paths:
+      - 'public/index.html'
+      - 'public/sidra-ota.js'
+      - 'public/sidra-editorial.css'
+      - 'public/sidra-editorial.js'
+      - 'test/reference-layout.test.js'
+      - '.github/workflows/sidra-editorial.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JS syntax and run all site tests
+        run: |
+          node --check server.js
+          node --check public/sidra-ota.js
+          test ! -f public/sidra-editorial.js || node --check public/sidra-editorial.js
+          node --test test/*.test.js
