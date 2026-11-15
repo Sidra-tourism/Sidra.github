@@ -6,7 +6,7 @@ This implementation adds `/portal` without replacing the existing public site. I
 
 - Public travel-services catalogue with explicit integration statuses and IATA external access.
 - Customer email/password sign-in and optional verified signup via a **Sidra-only Supabase project**.
-- Customer request submission/trackers; no pretend ticket booking or payment acceptance.
+- Editable signed-in customer profile (display name), immutable email/role from this UI, and customer request submission/trackers; no pretend ticket booking or payment acceptance.
 - Restricted staff operations, department-scoped request status updates, owner-only role assignments, audit events.
 - Fail-closed when authentication is not configured. No public admin elevation, no embedded service-role keys.
 
