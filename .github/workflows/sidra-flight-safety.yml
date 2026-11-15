@@ -1,0 +1,30 @@
+name: Sidra public fare integrity and route validation
+on:
+  push:
+    branches:
+      - fix/sidra-mandatory-routes-no-demo-fares-20261115
+    paths:
+      - 'flight-policy.js'
+      - 'server.js'
+      - 'public/index.html'
+      - 'test/flight-safety.test.js'
+      - '.github/workflows/sidra-flight-safety.yml'
+  pull_request:
+    paths:
+      - 'flight-policy.js'
+      - 'server.js'
+      - 'public/index.html'
+      - 'test/flight-safety.test.js'
+      - '.github/workflows/sidra-flight-safety.yml'
+permissions:
+  contents: read
+jobs:
+  flight-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check server.js
+      - run: node --test test/flight-safety.test.js
