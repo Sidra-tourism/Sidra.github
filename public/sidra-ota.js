@@ -251,8 +251,15 @@
       if(location.length<2||!validDate(start)||start<localToday()||!validDate(end)||end<start||!time){
         error.textContent='Enter a pickup location, valid dates, and a pickup time.';return;
       }
+      const sameLocation=byId('sidraCarSameLocation');
+      const dropoffLocation=sameLocation&&!sameLocation.checked
+        ? (byId('sidraCarDropoffLocation')?.value.trim()||'') : location;
+      if(dropoffLocation.length<2){error.textContent='Enter a drop-off location.';return;}
+      const dropoffTime=byId('sidraCarDropoffTime')?.value||time;
       sendWhatsApp('Car rental quotation request',
-        'Pickup: '+location+'\nPickup date: '+start+'\nDrop-off date: '+end+'\nPickup time: '+time+
+        'Pickup: '+location+'\nDrop-off location: '+dropoffLocation+
+        '\nPickup date: '+start+'\nDrop-off date: '+end+
+        '\nPickup time: '+time+'\nDrop-off time: '+dropoffTime+
         '\nVehicle preference: '+(byId('carPreference').value||'Any'));
       return;
     }
