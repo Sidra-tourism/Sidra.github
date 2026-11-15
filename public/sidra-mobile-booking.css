@@ -1,0 +1,224 @@
+/* Sidra Tourism 2026 mobile travel search — original brand UI.
+ * Reference-aligned navigation/forms, no Expedia marks, prices or claims. */
+.editorial-layout .sidra-mobile-field{min-width:0;position:relative}
+.editorial-layout .sidra-mobile-field input,.editorial-layout .sidra-mobile-field select{
+  width:100%;min-width:0;color:#1a294a;background:#fff
+}
+.editorial-layout .sidra-travel-date-summary{
+  display:block;color:#1b477c;font-weight:760;font-size:12px;
+  background:#f1f7fd;border:1px solid #dce6f3;padding:10px 13px;
+  border-radius:10px;line-height:1.5;
+}
+.editorial-layout .sidra-manual-airport{display:block;max-width:max-content;background:transparent;border:0;color:#1765ae;font-size:11px;font-weight:760;padding:8px 1px;cursor:pointer}
+.editorial-layout .sidra-airport-swap{
+  position:absolute;z-index:8;right:12px;top:31px;border:1px solid #b8d0ee;
+  height:34px;width:34px;border-radius:50%;background:#fff;color:#125fba;
+  font-weight:800;font-size:19px;box-shadow:0 3px 10px #091b3920;cursor:pointer
+}
+.editorial-layout .sidra-flight-cabin select{padding:10px!important}
+.editorial-layout .sidra-package-components{
+  grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap;align-items:center
+}
+.editorial-layout .sidra-package-components button{
+  border:1px solid #b9c8df;background:#fff;border-radius:24px;
+  min-height:37px;padding:8px 14px;font-size:12px;color:#1e314f;font-weight:750;cursor:pointer
+}
+.editorial-layout .sidra-package-components button.active{background:#eaf3ff;border:2px solid #1e417b;padding:7px 13px}
+.editorial-layout .sidra-package-trip{
+  grid-column:1/-1;display:flex;gap:15px;align-items:center;flex-wrap:wrap;
+  border-bottom:1px solid #e0e7ef;padding-bottom:10px
+}
+.editorial-layout .sidra-package-trip strong{font-size:13px;color:#233c63}
+.editorial-layout .sidra-package-trip button{border:0;background:none;padding:8px 4px;font-size:13px;font-weight:750;color:#293d61;cursor:pointer}
+.editorial-layout .sidra-package-trip button.active{color:#146bc4}
+.editorial-layout .sidra-package-fields{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.editorial-layout .sidra-package-fields .sidra-subheading{grid-column:1/-1;margin:8px 0 0;font-size:15px;color:#142644}
+.editorial-layout .sidra-package-fields .sidra-package-flight[hidden],
+.editorial-layout .sidra-package-fields .sidra-package-stay[hidden],
+.editorial-layout .sidra-package-fields .sidra-package-return[hidden]{display:none!important}
+.editorial-layout .sidra-package-fields .sidra-travel-date-summary{grid-column:1/-1}
+.editorial-layout .sidra-package-form>.search-btn{grid-column:1/-1!important;justify-self:end;min-width:176px!important}
+.editorial-layout .sidra-package-form .ota-form-error{grid-column:1/-1}
+.editorial-layout .sidra-extension-form .sidra-context{grid-column:1/-1;font-size:13px;color:#263e63;line-height:1.5;margin:0 0 6px}
+.editorial-layout .sidra-extension-form .sidra-travel-date-summary{grid-column:1/-1}
+.editorial-layout .sidra-extension-form>.search-btn{grid-column:1/-1!important;justify-self:end}
+.editorial-layout .sidra-mobile-stack{align-items:stretch}
+.editorial-layout .sidra-same-place{display:flex!important;align-items:center;gap:8px;margin-top:8px;font-size:12px;font-weight:650!important;color:#344967!important}
+.editorial-layout .sidra-same-place input{width:17px!important;height:17px!important;min-height:0!important;accent-color:#1765c1}
+.editorial-layout input:disabled{background:#f3f6fa!important;color:#778399!important}
+.editorial-layout .car-mode-tabs button{transition:border-color .16s,color .16s}
+.editorial-layout .sidra-booking-form .field label{font-weight:700}
+.editorial-layout .sidra-booking-form .search-btn{align-self:end}
+.editorial-layout .sidra-package-form{display:grid!important;grid-template-columns:1fr!important;gap:13px}
+.editorial-layout .sidra-extension-form{display:grid!important;grid-template-columns:2fr 1fr 1fr auto!important;gap:11px}
+.editorial-layout .sidra-extension-form[style*="display: none"],
+.editorial-layout .sidra-package-form[style*="display: none"]{display:none!important}
+
+@media(max-width:700px){
+  .editorial-layout.sidra-mobile-search-ready{background:#fff!important}
+  .editorial-layout.sidra-mobile-search-ready .hero{
+    padding:0!important;min-height:0!important;background:#fff!important;color:#172746!important;
+    overflow:visible!important
+  }
+  .editorial-layout.sidra-mobile-search-ready .hero::before{display:none!important}
+  .editorial-layout.sidra-mobile-search-ready .hero-intro{display:none!important}
+  .editorial-layout.sidra-mobile-search-ready .hero .site-search{
+    margin:0!important;max-width:100%!important;width:100%!important;
+    padding:0 18px 18px!important;border-radius:0!important;
+    border:0!important;box-shadow:none!important;background:#fff!important
+  }
+  .editorial-layout .site-search>.tabs.ota-tabs{
+    display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;
+    overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;
+    justify-content:flex-start!important;gap:5px!important;
+    margin:5px -2px 16px!important;padding:4px 0 0!important;
+    scrollbar-width:none;border-bottom:1px solid #d8dde8!important
+  }
+  .editorial-layout .site-search>.tabs.ota-tabs::-webkit-scrollbar{display:none}
+  .editorial-layout .site-search .ota-tab{
+    flex:0 0 23%!important;min-width:76px!important;max-width:none!important;
+    min-height:106px!important;padding:12px 4px 15px!important;
+    scroll-snap-align:start;gap:10px!important;font-size:12px!important;
+    border-bottom:2px solid transparent!important;color:#1e2843!important
+  }
+  .editorial-layout .site-search .ota-tab.active{color:#155fbc!important;border-bottom-color:#196ad9!important}
+  .editorial-layout .site-search .ota-tab .ota-icon{font-size:36px!important;line-height:1!important}
+  .editorial-layout .site-search>#flightArea,
+  .editorial-layout .site-search>#hotelArea,
+  .editorial-layout .site-search>#carArea,
+  .editorial-layout .site-search>#holidayArea,
+  .editorial-layout .site-search>#experiencesArea,
+  .editorial-layout .site-search>#cruisesArea{padding:0 0 7px!important}
+  .editorial-layout .site-search>.quick{display:none!important}
+  .editorial-layout .site-search .field{min-width:0;margin:0}
+  .editorial-layout .site-search .field label{display:block;font-size:11px;color:#55637a;letter-spacing:0;margin:0 0 6px;font-weight:750}
+  .editorial-layout .site-search .field input,
+  .editorial-layout .site-search .field select,
+  .editorial-layout .site-search .ota-guest-trigger{
+    min-height:61px!important;border:1.5px solid #a9b4c8!important;
+    border-radius:12px!important;background:#fff!important;
+    color:#172842!important;font-size:15px!important;font-weight:550!important;
+    padding:13px 14px!important;box-shadow:none!important
+  }
+  .editorial-layout .site-search .field input:focus-visible,.editorial-layout .site-search .field select:focus-visible{
+    border-color:#1868c4!important;outline:2px solid #a5dcfa!important
+  }
+  .editorial-layout .site-search .search-btn{
+    display:block!important;width:100%!important;max-width:none!important;min-height:59px!important;
+    border-radius:32px!important;background:#1968cf!important;color:#fff!important;
+    font-size:15px!important;font-weight:850!important;padding:15px 17px!important;
+    grid-column:1/-1!important;box-shadow:none!important
+  }
+  .editorial-layout .site-search #hotelArea.ota-hotel-grid{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important;align-items:stretch!important
+  }
+  .editorial-layout .site-search #hotelArea.ota-hotel-grid[style*="display: none"]{display:none!important}
+  .editorial-layout .site-search #hotelArea .hotel-place,
+  .editorial-layout .site-search #hotelArea .hotel-occupancy,
+  .editorial-layout .site-search #hotelArea .sidra-travel-date-summary{grid-column:1/-1!important}
+  .editorial-layout .site-search #hotelArea .hotel-checkin{grid-column:1!important}
+  .editorial-layout .site-search #hotelArea .hotel-checkout{grid-column:2!important}
+  .editorial-layout .site-search #hotelArea>.ota-hotel-search{grid-column:1/-1!important}
+  .editorial-layout .site-search .ota-icon-input>span{font-size:21px;left:14px}
+  .editorial-layout .site-search .ota-icon-input input{padding-left:43px!important}
+  .editorial-layout .site-search #normalTrip.grid{
+    display:flex!important;flex-direction:column!important;gap:12px!important
+  }
+  .editorial-layout .site-search #normalTrip.grid[style*="display: none"]{display:none!important}
+  .editorial-layout .site-search #normalTrip.grid .sidra-internal-country{
+    display:none!important
+  }
+  .editorial-layout .site-search #normalTrip.grid.show-manual-airport .sidra-internal-country{display:block!important}
+  .editorial-layout .site-search #normalTrip .search-btn{grid-column:auto!important}
+  .editorial-layout .site-search #normalTrip .sidra-flight-return[style*="display: none"]{display:none!important}
+  .editorial-layout .site-search .trip-tabs{
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));
+    border-bottom:1px solid #d8dfeb;margin:0 0 15px!important;
+    justify-content:center;gap:3px!important
+  }
+  .editorial-layout .site-search .trip-tabs>.trip{
+    background:#fff!important;color:#202b47!important;box-shadow:none!important;
+    padding:10px 4px 12px!important;border-radius:0!important;
+    border-bottom:2px solid transparent!important;font-size:13px!important;font-weight:750
+  }
+  .editorial-layout .site-search .trip-tabs>.trip.active{
+    color:#1665c1!important;border-bottom-color:#1768d2!important
+  }
+  .editorial-layout .sidra-travel-date-summary{
+    background:#f5f9ff;padding:9px 12px;border-radius:10px;
+    font-size:12px;color:#174982;text-align:left
+  }
+  .editorial-layout .sidra-airport-swap{top:-12px;right:8px;width:38px;height:38px;z-index:9}
+  .editorial-layout .sidra-manual-airport{font-size:10px;text-align:left;margin:0 0 5px}
+  .editorial-layout .site-search #paxBox{max-width:calc(100vw - 40px);z-index:70}
+  .editorial-layout .site-search .pax-display{min-height:61px;border:1.5px solid #a9b4c8!important}
+  .editorial-layout .site-search #carArea.ota-car-grid{display:flex!important;flex-direction:column!important;gap:16px!important}
+  .editorial-layout .site-search #carArea.ota-car-grid[style*="display: none"]{display:none!important}
+  .editorial-layout .site-search #carArea .car-mode-tabs{
+    width:100%;max-width:100%;background:#fff;border:0;border-bottom:1px solid #d5dceb;
+    padding:0;gap:0;grid-template-columns:1fr 1fr;border-radius:0
+  }
+  .editorial-layout .site-search #carArea .car-mode-btn{
+    border-radius:0!important;background:#fff!important;color:#223250!important;
+    box-shadow:none!important;font-size:13px;line-height:1.3;
+    padding:13px 9px!important;border-bottom:2px solid transparent!important
+  }
+  .editorial-layout .site-search #carArea .car-mode-btn.active{color:#1766c7!important;border-bottom-color:#1768d2!important}
+  .editorial-layout .site-search #carArea .car-form-fields{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important
+  }
+  .editorial-layout .site-search #carArea .car-form-fields[hidden]{display:none!important}
+  .editorial-layout .site-search #carArea .car-place,
+  .editorial-layout .site-search #carArea .sidra-car-dropoff,
+  .editorial-layout .site-search #carArea .car-preference,
+  .editorial-layout .site-search #carArea .sidra-travel-date-summary{grid-column:1/-1!important}
+  .editorial-layout .site-search #carArea .car-form-fields>.field:has(input[type=time]){grid-column:auto}
+  .editorial-layout .site-search #carArea .ota-car-search{grid-column:1/-1!important;width:100%!important}
+  .editorial-layout .site-search #carArea .sidra-same-place{margin-top:7px!important}
+  .editorial-layout .site-search #carArea .sidra-same-place input{
+    background:transparent!important;border:1px solid #aebacc!important;padding:0!important;
+    width:17px!important;min-height:17px!important;height:17px!important
+  }
+  .editorial-layout .sidra-package-form{
+    display:flex!important;flex-direction:column;gap:14px!important
+  }
+  .editorial-layout .sidra-package-form[style*="display: none"]{display:none!important}
+  .editorial-layout .sidra-package-components{gap:7px}
+  .editorial-layout .sidra-package-components button{min-height:38px;padding:8px 11px;font-size:12px}
+  .editorial-layout .sidra-package-trip{gap:15px;margin-top:4px}
+  .editorial-layout .sidra-package-trip button{padding:8px 3px}
+  .editorial-layout .sidra-package-fields{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px
+  }
+  .editorial-layout .sidra-package-fields .sidra-package-flight:has(input[type=text]),
+  .editorial-layout .sidra-package-fields .sidra-package-stay:has(input[type=text]),
+  .editorial-layout .sidra-package-fields .sidra-subheading,
+  .editorial-layout .sidra-package-fields .sidra-travel-date-summary,
+  .editorial-layout .sidra-package-fields .field:has(#sidraPackageCabin),
+  .editorial-layout .sidra-package-fields .field:has(#sidraPackageTravelers){grid-column:1/-1}
+  .editorial-layout .sidra-subheading{margin:10px 0 0!important;font-size:15px!important}
+  .editorial-layout .sidra-extension-form{
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important
+  }
+  .editorial-layout .sidra-extension-form[style*="display: none"]{display:none!important}
+  .editorial-layout .sidra-extension-form .field:first-of-type,
+  .editorial-layout .sidra-extension-form .sidra-context,
+  .editorial-layout .sidra-extension-form .sidra-travel-date-summary,
+  .editorial-layout .sidra-extension-form>.search-btn,
+  .editorial-layout .sidra-extension-form>.ota-form-error{grid-column:1/-1!important}
+  .editorial-layout .sidra-extension-form .sidra-context{margin:3px 0 2px;font-size:12px}
+  .editorial-layout.sidra-mobile-search-ready .promo-section{
+    margin-top:0!important;padding:24px 18px 28px!important;border-top:1px solid #dce2eb
+  }
+  .editorial-layout.sidra-mobile-search-ready .travel-promo{margin:0!important}
+}
+@media(max-width:380px){
+  .editorial-layout .site-search .ota-tab{flex-basis:25%!important;min-width:75px!important}
+  .editorial-layout .site-search .field input,.editorial-layout .site-search .field select{font-size:14px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .editorial-layout .site-search .ota-tab{transition:none!important}
+}
