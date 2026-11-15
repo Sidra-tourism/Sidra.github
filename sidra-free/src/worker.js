@@ -55,4 +55,4 @@ export async function handleRequest(request, env = {}, networkFetch = fetch) {
   if (env.ASSETS) return env.ASSETS.fetch(request);
   return json({ error: 'Static assets not configured' }, 503);
 }
-export default { fetch: handleRequest };
+export default { fetch(request, env) { return handleRequest(request, env); } };
