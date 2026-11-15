@@ -1,4 +1,5 @@
 import express from "express";
+import { createRequestThrottle } from "./lib/request-throttle.js";
 import { registerPortalRoutes } from "./lib/portal-routes.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -107,7 +108,7 @@ app.post("/api/contact", async (req, res) => {
   res.json({ status: "received", email: emailResult });
 });
 
-app.post("/api/login", (req, res) => {
+app.post("/api/login", createRequestThrottle({ limit: 6, windowMs: 15 * 60 * 1000 }), (req, res) => {
   const { email, password } = req.body || {};
   if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD || !process.env.ADMIN_API_TOKEN) {
     return res.status(503).json({ error: "Admin login is not configured." });
