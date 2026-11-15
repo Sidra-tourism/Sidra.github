@@ -29,6 +29,8 @@ async function verifyOwner(request, env, networkFetch) {
   if (parts.length !== 3) return false;
   let header; let claims;
   try { header = decodeJson(parts[0]); claims = decodeJson(parts[1]); } catch { return false; }
+  if (!header || typeof header !== 'object' || Array.isArray(header) ||
+      !claims || typeof claims !== 'object' || Array.isArray(claims)) return false;
   if (header.alg !== 'RS256' || typeof header.kid !== 'string' || header.kid.length > 256) return false;
   const now = Math.floor(Date.now() / 1000);
   const audience = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
@@ -106,6 +108,7 @@ export async function handleAdminRequest(request, env = {}, networkFetch = fetch
             .bind(crypto.randomUUID(), match[1], env.SIDRA_ADMIN_EMAIL.toLowerCase(), body.expectedStatus, body.status)
         ]);
         if (results?.[0]?.meta?.changes !== 1) return answer({ error: 'Enquiry changed. Refresh and retry.' }, 409);
+        if (results?.[1]?.meta?.changes !== 1) return answer({ error: 'Audit confirmation unavailable. Refresh and contact an administrator.' }, 503);
         return answer({ id: match[1], status: body.status, audited: true });
       } catch { return answer({ error: 'Status update unavailable' }, 503); }
     }

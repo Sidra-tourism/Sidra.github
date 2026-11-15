@@ -82,3 +82,23 @@ test('status update uses conditional atomic D1 batch plus an audit row',async()=
   assert.match(statements[0].sql,/UPDATE sidra_enquiries/);
   assert.match(statements[1].sql,/INSERT INTO sidra_enquiry_audit/);
 });
+
+test('malformed JWT payload is rejected as unauthorized, not an availability error', async () => {
+  const env={ACCESS_TEAM_DOMAIN:'sidra-owners.cloudflareaccess.com',ACCESS_AUD:'sidra-audience-tag',SIDRA_ADMIN_EMAIL:'admin@sidra-tourism.com'};
+  const header=Buffer.from(JSON.stringify({alg:'RS256',kid:'test'})).toString('base64url');
+  const malformed=Buffer.from('null').toString('base64url');
+  const response=await handleAdminRequest(req('/api/me','GET',{headers:{'cf-access-jwt-assertion':`${header}.${malformed}.YWJj`}}),env,async()=>{throw Error('must not fetch certs');});
+  assert.equal(response.status,401);
+});
+
+test('status update cannot claim audit success if D1 reports no audit row', async () => {
+  const a=await identity();
+  const id='11111111-1111-1111-1111-111111111111';
+  const db={
+    prepare(){return {bind(){return this}}},
+    async batch(){return [{meta:{changes:1}},{meta:{changes:0}}]}
+  };
+  const response=await handleAdminRequest(req('/api/enquiries/'+id,'PATCH',{headers:{'cf-access-jwt-assertion':a.token,origin,'content-type':'application/json'},body:JSON.stringify({status:'reviewing',expectedStatus:'requested'})}),{...a.env,SIDRA_DB:db},a.fetchJwks);
+  assert.equal(response.status,503);
+  assert.equal((await response.json()).audited,undefined);
+});
