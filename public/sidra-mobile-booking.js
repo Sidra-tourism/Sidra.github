@@ -59,7 +59,7 @@ function enhanceFlights(){
   $('paxText')?.closest('.field')?.classList.add('sidra-mobile-field');
   const message=document.createElement('button');message.className='sidra-manual-airport';
   message.type='button';message.textContent="Can't find your airport? Enter details manually";
-  message.setAttribute('aria-expanded','false');form.insertAdjacentElement('beforebegin',message);
+  message.setAttribute('aria-expanded','false');$('toCity')?.closest('.field')?.insertAdjacentElement('afterend',message);
   message.addEventListener('click',()=>{
     const show=message.getAttribute('aria-expanded')!=='true';
     form.classList.toggle('show-manual-airport',show);
@@ -258,10 +258,19 @@ function setupCruises(){
 function initialize(){
   document.body.classList.add('sidra-mobile-search-ready');
   enhanceFlights();enhanceHotels();enhanceCars();setupPackages();setupExperiences();setupCruises();
+  // A hidden panel must be truly absent from layout, even if a legacy stylesheet
+  // sets display:grid/flex!important. This also protects screen-reader navigation.
+  const forms={flights:'flightArea',hotels:'hotelArea',cars:'carArea',
+    holidays:'holidayArea',experiences:'experiencesArea',cruises:'cruisesArea'};
+  const selectOriginal=window.switchMain;
+  window.switchMain=(kind,silent=false)=>{
+    if(!Object.hasOwn(forms,kind))return;
+    if(typeof selectOriginal==='function')selectOriginal(kind,silent);
+    for(const [name,id] of Object.entries(forms))$(id).hidden=name!==kind;
+  };
   // Allow safe deep links to a selected search category for QA and customer sharing.
   const category=new URLSearchParams(window.location.search).get('category');
-  if(['flights','hotels','cars','holidays','experiences','cruises'].includes(category)&&typeof window.switchMain==='function')
-    window.switchMain(category,true);
+  window.switchMain(Object.hasOwn(forms,category)?category:'hotels',true);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});
 else initialize();
