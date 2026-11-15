@@ -67,3 +67,70 @@ test('server must not provide sample flights or enable unpaid ticket confirmatio
   assert.match(server, /FLIGHT_PROVIDER_UNAVAILABLE/);
   assert.doesNotMatch(server, /status:\s*['"]confirmed['"]/);
 });
+
+
+test('inline client script is syntactically valid', async () => {
+  const { Script } = await import('node:vm');
+  const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+  const source = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(source, 'Expected inline flight form script');
+  assert.doesNotThrow(() => new Script(source));
+});
+
+test('client form does not request fares until countries, airports and date are entered', async () => {
+  const { runInNewContext } = await import('node:vm');
+  const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+  const source = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+  class Element {
+    constructor(id='') {
+      this.id=id; this.value=''; this.children=[]; this.style={display:''};
+      this.listeners={};this.textContent='';this.className='';this.min='';
+      this.classList={toggle(){}};this.dataset={};
+    }
+    appendChild(el){this.children.push(el);return el;}
+    append(...els){this.children.push(...els);}
+    replaceChildren(...els){this.children=[...els];}
+    addEventListener(name,fn){this.listeners[name]=fn;}
+    focus(){this.focused=true;}
+    scrollIntoView(){}
+    setAttribute(){}
+    querySelectorAll(){return this.children.filter(x=>x.tag==='input');}
+  }
+  const els=new Map();
+  const get=id=>{if(!els.has(id))els.set(id,new Element(id));return els.get(id);};
+  let networkCalls=0;
+  const sandbox={
+    URLSearchParams,
+    document:{
+      getElementById:get,
+      createElement(tag){const el=new Element();el.tag=tag;return el;},
+      querySelectorAll(selector){
+        return selector==='.multi-row'?get('multiRows').children.filter(x=>x.className==='multi-row'):[];
+      },
+      addEventListener(){}
+    },
+    window:{open(){throw Error('must not open a payment or booking window')}},
+    fetch:async ()=>{networkCalls++;return {status:503,ok:false,json:async()=>({
+      code:'FLIGHT_PROVIDER_UNAVAILABLE',message:'No authenticated live provider',results:[]
+    })};}
+  };
+  const run=runInNewContext;
+  run(source,sandbox);
+  await run('searchFlights()',sandbox);
+  assert.equal(networkCalls,0);
+  assert.match(get('searchMessage').textContent,/departure country/i);
+  get('fromCountry').value='Qatar';get('fromCity').value='DOH';
+  await run('searchFlights()',sandbox);
+  assert.equal(networkCalls,0);
+  get('toCountry').value='Kazakhstan';get('toCity').value='ALA';
+  get('departureDate').value='2099-01-01';
+  await run('searchFlights()',sandbox);
+  assert.equal(networkCalls,1);
+  const resultText=get('resultBox').children.map(e=>e.textContent).join(' ');
+  assert.match(resultText,/No authenticated live provider/);
+  assert.doesNotMatch(resultText,/\$\d+|USD\s*\d+/);
+  run("setTrip('roundtrip')",sandbox);
+  await run('searchFlights()',sandbox);
+  assert.equal(networkCalls,1, 'round-trip cannot omit return date');
+  assert.match(get('searchMessage').textContent,/return date/i);
+});
