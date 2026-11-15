@@ -6,6 +6,7 @@ on:
     paths:
       - 'lib/membership-*.js'
       - 'public/account*'
+      - 'public/member-qr.js'
       - 'public/admin-workspace*'
       - 'public/sidra-premium.css'
       - 'public/index.html'
@@ -17,6 +18,7 @@ on:
     paths:
       - 'lib/membership-*.js'
       - 'public/account*'
+      - 'public/member-qr.js'
       - 'public/admin-workspace*'
       - 'public/sidra-premium.css'
       - 'server.js'
@@ -37,6 +39,7 @@ jobs:
           node --check server.js
           node --check lib/membership-core.js
           node --check lib/membership-routes.js
+          node --check public/member-qr.js
           node --check public/account.js
           node --check public/admin-workspace.js
       - name: Unit and fail-closed tests

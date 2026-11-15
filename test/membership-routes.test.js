@@ -45,7 +45,7 @@ test('identity encryption requires secret server key and uses different nonces',
 });
 test('preview includes customer sign in, create account, OTP, recovery and family pages',()=>{
  const page=readFileSync(new URL('../public/account.html',import.meta.url),'utf8');
- for(const id of ['signInForm','signUpForm','verifyForm','recoveryForm','passengerForm','bookingList','walletNumber','memberCode','identityDoc','profilePhoto']) assert.ok(page.includes('id="'+id+'"'),id);
+ for(const id of ['signInForm','signUpForm','verifyForm','recoveryForm','resetForm','passengerForm','bookingList','walletNumber','memberCode','identityDoc','profilePhoto']) assert.ok(page.includes('id="'+id+'"'),id);
  assert.ok(page.includes('STANDARD USER'));
  assert.match(page,/SPID \/ National ID/);
  assert.match(page,/Passport expiry/);
@@ -65,4 +65,42 @@ test('SQL protects tables from anon and uses atomic audited markup RPC',()=>{
  assert.match(sql,/enable row level security/i);assert.match(sql,/revoke all on public.%I from PUBLIC,anon,authenticated/);
  assert.match(sql,/revoke all on function public.sidra_admin_set_markup\(uuid,integer\) from PUBLIC, anon, authenticated/);
  assert.match(sql,/SID-QA-/);
+});
+
+
+test('membership QR is a genuine QR matrix that encodes only the membership number',async()=>{
+ const {makeMemberQrCode}=await import('../public/member-qr.js');
+ const a=makeMemberQrCode('SID-QA-2026-N000001');
+ assert.equal(a.length,25);
+ assert.ok(a.every(row=>row.length===25 && row.every(v=>typeof v==='boolean')));
+ assert.ok(a[0][0]);assert.ok(a[0][6]);assert.ok(a[6][0]);assert.ok(a[6][6]);
+ const { createHash } = await import('node:crypto');
+ const digest=createHash('sha256').update(a.map(row=>row.map(bit=>bit?'1':'0').join('')).join('')).digest('hex');
+ assert.equal(digest,'62be592eddcb9ca1399dc4b3ed12913ae28d7abfcfbbb018f85e3cc4868271d0');
+ assert.throws(()=>makeMemberQrCode('Mira Example'));
+ assert.throws(()=>makeMemberQrCode('P12345678'));
+});
+
+test('administrator API requires verified MFA assurance, not merely role',async()=>{
+ const saved={...process.env},oldFetch=globalThis.fetch;
+ const user='123e4567-e89b-42d3-a456-426614174000';
+ const payload=Buffer.from(JSON.stringify({sub:user,aal:'aal1'})).toString('base64url');
+ const token=['eyJhbGciOiJIUzI1NiJ9',payload,'fakesignature'].join('.');
+ try{
+  process.env.SIDRA_MEMBERSHIP_ENABLED='true';process.env.SIDRA_SUPABASE_URL='https://rcavyshsxnzodoipsbun.supabase.co';
+  process.env.SIDRA_SUPABASE_PUBLISHABLE_KEY='sb_publishable_test';process.env.SIDRA_SUPABASE_SECRET_KEY='sb_secret_test';
+  let accesses=0;
+  globalThis.fetch=async url=>{
+   accesses++;
+   if(url.includes('/auth/v1/user'))return {ok:true,json:async()=>({id:user,email:'admin@sidra-tourism.com',email_confirmed_at:'2026-11-15T00:00:00Z'})};
+   if(url.includes('/rest/v1/sidra_member_roles'))return {ok:true,json:async()=>[{role:'super_admin'}]};
+   if(url.includes('/rest/v1/sidra_admin_settings'))return {ok:true,json:async()=>[{markup_basis_points:1000}]};
+   throw new Error('unexpected request '+url);
+  };
+  const {routes}=application();
+  const r=await call(routes.get('GET /api/member/admin/overview'),{headers:{authorization:'Bearer '+token}});
+  assert.equal(r.code,403);
+  assert.match(r.payload.error,/MFA/i);
+  assert.equal(accesses,2,'no privileged data query after MFA rejection');
+ }finally{process.env=saved;globalThis.fetch=oldFetch;}
 });

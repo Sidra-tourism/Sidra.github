@@ -14,7 +14,7 @@ async function load(){
   if(!token)throw new Error('Open the Customer / Admin sign-in page to authenticate.');
   const [account,overview]=await Promise.all([api('me'),api('admin/overview')]);
   if(!['super_admin','admin'].includes(account.user.role))throw new Error('Administrator access is restricted to approved staff.');
-  $('protectedAdmin').classList.remove('hidden');
+  $('protectedAdmin').classList.remove('hidden');$('adminLocked').classList.add('hidden');
   $('markupPercentage').value=(overview.markupBasisPoints/100).toFixed(2);
   $('inventory').textContent=overview.airlineProvider==='not_connected'?'Not connected':'Available';
   $('payments').textContent=overview.paymentGateway==='not_connected'?'Not connected':'Provider configured';
@@ -22,7 +22,7 @@ async function load(){
   const integrations=[['IATA / BSP settlement',overview.iataSettlement],['Amadeus GDS',overview.amadeus],['Airline NDC / inventory',overview.airlineProvider],['Payment provider',overview.paymentGateway],['Developer API / ChatGPT MCP',overview.developerMcp]];
   $('integrationList').replaceChildren();for(const [name,value] of integrations)row(name,String(value).replaceAll('_',' '));
   status('Verified administrator: '+account.user.email+'. All transactions remain disabled until provider verification.');
- }catch(e){$('protectedAdmin').classList.add('hidden');status(e.message,true);}
+ }catch(e){$('protectedAdmin').classList.add('hidden');$('adminLocked').classList.remove('hidden');status(e.message,true);}
 }
 $('markupForm').addEventListener('submit',async event=>{
  event.preventDefault();const pct=Number($('markupPercentage').value);
