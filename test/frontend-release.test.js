@@ -58,3 +58,10 @@ test('the live release contains no new authentication or payment backend',()=>{
   assert.doesNotMatch(ota,/https:\/\/.*supabase/);
   assert.doesNotMatch(ota,/innerHTML\s*\+=\s*[^'"]/);
 });
+
+test('footer account entry opens the preview dialog and release assets bypass stale mobile cache',()=>{
+  assert.match(html,/href="#signin">My Sidra account<\/a>/);
+  assert.match(ota,/footer a\[href="#signin"\]/);
+  assert.match(html,/sidra-ota\.css\?v=20261116/);
+  assert.match(html,/sidra-ota\.js\?v=20261116/);
+});

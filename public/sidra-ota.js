@@ -253,6 +253,7 @@
   icon.setAttribute('aria-haspopup','dialog');
   icon.setAttribute('aria-controls','quickSignIn');
   icon.addEventListener('click',(e)=>{e.preventDefault();dialog.showModal();byId('previewLoginIdentifier').focus();});
+  document.querySelector('footer a[href="#signin"]')?.addEventListener('click',(event)=>{event.preventDefault();dialog.showModal();byId('previewLoginIdentifier').focus();});
   const showAuthPreview = (kind) => {
     byId('previewLoginForm').hidden = kind !== 'signin';
     byId('quickSignupPreview').hidden = kind !== 'signup';
