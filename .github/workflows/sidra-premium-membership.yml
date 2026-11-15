@@ -43,4 +43,4 @@ jobs:
           node --check public/account.js
           node --check public/admin-workspace.js
       - name: Unit and fail-closed tests
-        run: node --test test/membership.test.js test/membership-routes.test.js
+        run: node --test test/membership.test.js test/membership-routes.test.js test/membership-design.test.js
