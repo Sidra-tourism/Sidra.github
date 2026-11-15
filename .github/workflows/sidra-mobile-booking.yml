@@ -1,0 +1,39 @@
+name: Sidra mobile booking forms verification
+on:
+  push:
+    branches: [feature/sidra-mobile-booking-ux-20261116, main]
+    paths:
+      - 'public/index.html'
+      - 'public/sidra-mobile-booking.js'
+      - 'public/sidra-mobile-booking.css'
+      - 'public/sidra-date-utils.mjs'
+      - 'public/sidra-ota.js'
+      - 'test/sidra-mobile-booking.test.js'
+      - '.github/workflows/sidra-mobile-booking.yml'
+  pull_request:
+    paths:
+      - 'public/index.html'
+      - 'public/sidra-mobile-booking.js'
+      - 'public/sidra-mobile-booking.css'
+      - 'public/sidra-date-utils.mjs'
+      - 'public/sidra-ota.js'
+      - 'test/sidra-mobile-booking.test.js'
+      - '.github/workflows/sidra-mobile-booking.yml'
+permissions:
+  contents: read
+jobs:
+  mobile-booking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check mobile frontend modules
+        run: |
+          node --check public/sidra-mobile-booking.js
+          node --check public/sidra-date-utils.mjs
+          node --check public/sidra-ota.js
+          node --check server.js
+      - name: Validate all Sidra booking and flight safety tests
+        run: node --test test/*.test.js
