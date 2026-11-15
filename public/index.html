@@ -262,6 +262,57 @@ function manualQuote(message, detail){
   button.addEventListener('click',()=>sendWhatsApp('Verified flight quotation request',detail));
   box.append(p,button);
 }
+function showLiveIndicativeFlightOffers(payload, criteria){
+  const safe = payload && payload.source === 'amadeus-production'
+    && payload.liveSearch === true
+    && payload.priceConfirmed === false
+    && payload.bookingEnabled === false
+    && payload.paymentEnabled === false
+    && Array.isArray(payload.results);
+  if(!safe){
+    manualQuote('Live fares cannot be verified yet. Request a quotation before payment.',flightDetails(criteria));
+    return;
+  }
+  const box=$id('resultBox');box.replaceChildren();
+  if(!payload.results.length){
+    manualQuote('No live offers were returned for this route and date. Ask Sidra Tourism for other options.',flightDetails(criteria));
+    return;
+  }
+  const notice=document.createElement('p');
+  notice.className='live-fare-warning';
+  notice.textContent='Live airline search results. Final price and availability must be reconfirmed before booking. No instant payment or ticketing is available.';
+  box.appendChild(notice);
+  let shown=0;
+  for(const offer of payload.results.slice(0,6)){
+    const price=offer?.total,currency=offer?.currency,going=offer?.itineraries?.[0];
+    if(typeof price!=='string'||!/^\\d{1,8}(?:\\.\\d{1,2})?$/.test(price)
+      ||Number(price)<=0||!Number.isFinite(Number(price))
+      ||typeof currency!=='string'||!/^[A-Z]{3}$/.test(currency)
+      ||!going||typeof going.from!=='string'||typeof going.to!=='string')continue;
+    const card=document.createElement('article');card.className='live-fare-card';
+    const heading=document.createElement('h3');
+    heading.textContent=going.from+' → '+going.to+(offer.itineraries.length>1?' (return)':'');
+    const airline=document.createElement('p');
+    airline.textContent='Airline: '+(going.carrierCode||'Provided by airline')+
+      ' · '+(Number.isInteger(going.stops)?going.stops+' stop'+(going.stops===1?'':'s'):'Route available');
+    const dates=document.createElement('p');
+    dates.textContent='Departure: '+String(going.departureAt||'To be confirmed');
+    const amount=document.createElement('strong');amount.className='live-fare-amount';
+    try{amount.textContent=new Intl.NumberFormat(undefined,{style:'currency',currency}).format(Number(price));}
+    catch{continue;}
+    const badge=document.createElement('p');badge.className='live-fare-disclaimer';
+    badge.textContent='Indicative fare from a live search; final fare is not yet confirmed.';
+    const button=document.createElement('button');button.type='button';button.className='btn light';
+    button.textContent='Request verified quote';
+    button.addEventListener('click',()=>sendWhatsApp('Live flight offer quotation request',
+      flightDetails(criteria)+'\\nAirline: '+(going.carrierCode||'Not specified')+
+      '\\nIndicative fare: '+currency+' '+price+'\\nOffer ID: '+String(offer.providerOfferId||'')));
+    card.append(heading,airline,dates,amount,badge,button);
+    box.append(card);shown++;
+  }
+  if(!shown)manualQuote('No usable airline offers could be confirmed. Request a manual quotation.',flightDetails(criteria));
+}
+
 async function searchFlights(){
   if(trip==='multicity')return showMulti();
   const data=validateFlightForm();
@@ -277,7 +328,12 @@ async function searchFlights(){
     if(!response.ok){
       manualQuote(result.error||'Unable to obtain a verified fare. Contact Sidra Tourism for a quotation.',flightDetails(data));return;
     }
-    // Never render an unaudited price returned by an unknown or uncontracted service.
+    // Only render a production-source response that confirms live read-only search.
+    if(result?.source==='amadeus-production' && result?.liveSearch===true
+      && result?.priceConfirmed===false && result?.bookingEnabled===false
+      && result?.paymentEnabled===false && Array.isArray(result.results)){
+      showLiveIndicativeFlightOffers(result,data);return;
+    }
     manualQuote('No verified live fare is available online yet. Request a quotation before payment.',flightDetails(data));
   }catch(e){
     manualQuote('Flight search service is unavailable. Please contact Sidra Tourism for a verified quote.',flightDetails(data));
