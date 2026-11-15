@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { can, parseRequest, canAccessService, validateStatus, SERVICES } from '../lib/portal-core.js';
+import { can, parseRequest, canAccessService, validateStatus, SERVICES, buildServerHeaders } from '../lib/portal-core.js';
 
 test('unrecognized role never receives administrative rights', () => {
   assert.equal(can('customer', 'manage_roles'), false);
@@ -31,4 +31,16 @@ test('service catalogue states unconfigured automation rather than promising liv
   const flight = SERVICES.find(x => x.id === 'flights');
   assert.equal(flight.live, false);
   assert.equal(flight.integration, 'pending_supplier_access');
+});
+
+test('new opaque Supabase secret keys are never placed in Bearer headers', () => {
+  const headers = buildServerHeaders('sb_secret_test123', false);
+  assert.equal(headers.apikey, 'sb_secret_test123');
+  assert.equal(Object.hasOwn(headers, 'authorization'), false);
+  assert.equal(headers.prefer, 'return=representation');
+});
+test('legacy JWT service role preserves compatibility while secrets remain server-only', () => {
+  const headers = buildServerHeaders('legacy-jwt', true);
+  assert.equal(headers.authorization, 'Bearer legacy-jwt');
+  assert.equal(headers.prefer, 'resolution=merge-duplicates,return=representation');
 });
