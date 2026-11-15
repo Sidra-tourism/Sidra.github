@@ -1,4 +1,5 @@
 import express from "express";
+import { registerPortalRoutes } from "./lib/portal-routes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
@@ -9,6 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.json({ limit: "1mb" }));
+registerPortalRoutes(app);
 app.use(express.static(path.join(__dirname, "public")));
 
 const bookings = [];
