@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import { validateFlightSearch } from "./flight-policy.js";
+import { createReadOnlyFareClient } from "./flight-offers-provider.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const bookings = [];
 const contacts = [];
+
+// Disabled without contracted production credentials and explicit public go-live approval.
+const fareClient=createReadOnlyFareClient();
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.hostinger.com",
@@ -33,7 +37,7 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "working", message: "Sidra Tourism API Running" });
 });
 
-app.get("/api/flight-search", (req, res) => {
+app.get("/api/flight-search", async (req, res) => {
   res.set("Cache-Control", "no-store");
   let criteria;
   try {
@@ -45,16 +49,35 @@ app.get("/api/flight-search", (req, res) => {
       results: []
     });
   }
-  // Never create quotes or fares without a verified contracted travel provider.
-  return res.status(503).json({
-    code: "FLIGHT_PROVIDER_UNAVAILABLE",
-    message: "Live fares are not connected. Request a verified quote from Sidra Tourism before payment.",
-    criteria,
-    results: [],
-    pricesVerified: false,
-    bookingEnabled: false,
-    paymentEnabled: false
-  });
+  // Separate approval protects production from surprise paid API calls.
+  // Do not activate until supplier contract, quotas, fraud controls and WAF verified.
+  if (process.env.SIDRA_PUBLIC_FARES_ACTIVE !== "true" || !fareClient.enabled) {
+    return res.status(503).json({
+      code: "FLIGHT_PROVIDER_UNAVAILABLE",
+      message: "Live fares are not connected. Request a verified quote from Sidra Tourism before payment.",
+      criteria,
+      results: [],
+      pricesVerified: false,
+      bookingEnabled: false,
+      paymentEnabled: false
+    });
+  }
+  try {
+    // Read-only search. This does NOT verify the final ticket price or book seats.
+    const result=await fareClient.search(criteria);
+    return res.status(200).json(result);
+  } catch (error) {
+    const unavailable=error?.code==="FLIGHT_PROVIDER_UNAVAILABLE";
+    return res.status(unavailable?503:502).json({
+      code:unavailable?"FLIGHT_PROVIDER_UNAVAILABLE":"FLIGHT_PROVIDER_ERROR",
+      message:"Live pricing is unavailable. Request a verified quote from Sidra Tourism before payment.",
+      criteria,
+      results:[],
+      pricesVerified:false,
+      bookingEnabled:false,
+      paymentEnabled:false
+    });
+  }
 });
 
 app.get("/api/flight-status", (_req, res) => {
