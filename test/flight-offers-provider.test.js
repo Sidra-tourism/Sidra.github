@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {createReadOnlyFareClient, isConfiguredFareProvider} from '../flight-offers-provider.js';
 
 const criteria={fromCountry:'Qatar',from:'DOH',toCountry:'Sri Lanka',to:'CMB',
@@ -98,4 +99,27 @@ test('invalid airport or past dates never cause provider network access',async()
   await assert.rejects(client.search({...criteria,from:'Qatar'}),/airport/i);
   await assert.rejects(client.search({...criteria,departureDate:'2020-01-01'}),/departure date/i);
   assert.equal(requests,0);
+});
+
+
+test('flight search server will only call read-only provider behind two explicit release gates',()=>{
+  const server=readFileSync(new URL('../server.js',import.meta.url),'utf8');
+  assert.match(server,/createReadOnlyFareClient/);
+  assert.match(server,/SIDRA_PUBLIC_FARES_ACTIVE/);
+  assert.match(server,/fareClient\.enabled/);
+  assert.match(server,/await fareClient\.search\(criteria\)/);
+  assert.match(server,/FLIGHT_PROVIDER_UNAVAILABLE/);
+  assert.match(server,/Cache-Control/);
+  assert.match(server,/bookingEnabled: false/);
+});
+
+test('public page only displays production-source indicative fares with confirmation warning',()=>{
+  const html=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
+  assert.match(html,/function showLiveIndicativeFlightOffers/);
+  assert.match(html,/amadeus-production/);
+  assert.match(html,/payload\.liveSearch === true/);
+  assert.match(html,/priceConfirmed === false/);
+  assert.match(html,/Final price and availability must be reconfirmed/);
+  assert.match(html,/Request verified quote/);
+  assert.doesNotMatch(html,/instant ticket issuance/i);
 });
