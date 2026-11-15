@@ -1,0 +1,43 @@
+name: Sidra premium membership preview checks
+on:
+  push:
+    branches:
+      - feature/sidra-premium-memberships-20261115
+    paths:
+      - 'lib/membership-*.js'
+      - 'public/account*'
+      - 'public/admin-workspace*'
+      - 'public/sidra-premium.css'
+      - 'public/index.html'
+      - 'server.js'
+      - 'database/sidra_membership.sql'
+      - 'test/membership*.test.js'
+      - '.github/workflows/sidra-premium-membership.yml'
+  pull_request:
+    paths:
+      - 'lib/membership-*.js'
+      - 'public/account*'
+      - 'public/admin-workspace*'
+      - 'public/sidra-premium.css'
+      - 'server.js'
+      - 'test/membership*.test.js'
+      - '.github/workflows/sidra-premium-membership.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check server.js
+          node --check lib/membership-core.js
+          node --check lib/membership-routes.js
+          node --check public/account.js
+          node --check public/admin-workspace.js
+      - name: Unit and fail-closed tests
+        run: node --test test/membership.test.js test/membership-routes.test.js
