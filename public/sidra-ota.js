@@ -13,7 +13,9 @@
     '<button type="button" role="tab" aria-selected="true" class="tab ota-tab active" data-tab="flights" aria-label="Flights"><span class="ota-icon" aria-hidden="true">✈</span> Flights</button>',
     '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="hotels" aria-label="Hotels"><span class="ota-icon" aria-hidden="true">🏨</span> Hotels</button>',
     '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="cars" aria-label="Car rentals"><span class="ota-icon" aria-hidden="true">🚗</span> Cars</button>',
-    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="holidays" aria-label="Holiday packages"><span class="ota-icon" aria-hidden="true">☀</span> Holidays</button>'
+    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="holidays" aria-label="Holiday packages"><span class="ota-icon" aria-hidden="true">☀</span> Holidays</button>',
+    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="experiences" aria-label="Experiences"><span class="ota-icon" aria-hidden="true">🗺️</span> Experiences</button>',
+    '<button type="button" role="tab" aria-selected="false" class="tab ota-tab" data-tab="cruises" aria-label="Cruises"><span class="ota-icon" aria-hidden="true">🛳️</span> Cruises</button>'
   ].join('');
 
   const hotelArea = byId('hotelArea');
@@ -50,9 +52,40 @@
   ].join('');
   hotelArea.insertAdjacentElement('afterend', holidayArea);
 
+  /* Enquiry-only extension categories; do not advertise live inventory or prices. */
+  const extraServiceAreas={};
+  for (const [kind, title] of [['experiences','Experiences'],['cruises','Cruises']]) {
+    const area=document.createElement('div');
+    area.id=kind+'Area';area.className='grid ota-extension-grid';
+    area.style.display='none';
+    area.setAttribute('role','tabpanel');
+    area.setAttribute('aria-label',title+' enquiry');
+    area.innerHTML=[
+      '<div class="field hotel-place"><label for="'+kind+'Destination">Destination</label><input id="'+kind+'Destination" placeholder="Where would you like to go?" maxlength="120"></div>',
+      '<div class="field"><label for="'+kind+'Date">Preferred date</label><input id="'+kind+'Date" type="date"></div>',
+      '<div class="field"><label for="'+kind+'Travellers">Travellers</label><select id="'+kind+'Travellers"><option value="1">1 traveller</option><option value="2">2 travellers</option><option value="3">3 travellers</option><option value="4">4 travellers</option><option value="5">5 travellers</option><option value="6">6 travellers</option><option value="7">7 travellers</option><option value="8">8 travellers</option></select></div>',
+      '<button type="button" class="search-btn">Search</button>',
+      '<p class="ota-form-error" role="status" aria-live="polite"></p>'
+    ].join('');
+    holidayArea.insertAdjacentElement('afterend',area);
+    extraServiceAreas[kind]=area;
+    const button=area.querySelector('.search-btn'),error=area.querySelector('.ota-form-error');
+    button.addEventListener('click',()=>{
+      const place=byId(kind+'Destination').value.trim(),date=byId(kind+'Date').value;
+      error.textContent='';
+      const d=new Date(),p=n=>String(n).padStart(2,'0');
+      const today=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+      if(place.length<2||!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(Date.parse(date))||date<today){
+        error.textContent='Enter a destination and a valid future date.';return;
+      }
+      sendWhatsApp(title+' quotation request','Destination: '+place+'\nPreferred date: '+date+'\nTravellers: '+byId(kind+'Travellers').value);
+    });
+  }
+
+
   /* Preserve the previous flights, airport validation, cars and quotation flow. */
-  window.switchMain = (kind) => {
-    if (!['flights', 'hotels', 'holidays', 'cars'].includes(kind)) return;
+  window.switchMain = (kind, silent = false) => {
+    if (!['flights', 'hotels', 'cars', 'holidays', 'experiences', 'cruises'].includes(kind)) return;
     tabs.querySelectorAll('.ota-tab').forEach((tab) => {
       const active = tab.dataset.tab === kind;
       tab.classList.toggle('active', active);
@@ -61,8 +94,9 @@
     byId('flightArea').style.display = kind === 'flights' ? 'block' : 'none';
     hotelArea.style.display = kind === 'hotels' ? 'grid' : 'none';
     holidayArea.style.display = kind === 'holidays' ? 'grid' : 'none';
+    for(const [name,area] of Object.entries(extraServiceAreas))area.style.display=name===kind?'grid':'none';
     byId('carArea').style.display = kind === 'cars' ? 'grid' : 'none';
-    if (location.hash !== '#flights') byId('flights').scrollIntoView({behavior:'smooth',block:'start'});
+    if (!silent && location.hash !== '#flights') byId('flights').scrollIntoView({behavior:'smooth',block:'start'});
   };
   tabs.addEventListener('click', (event) => {
     const tab = event.target.closest('button[data-tab]');
@@ -272,4 +306,5 @@
     e.preventDefault();clearPreview();
     byId('quickSignInNotice').textContent='This is a visual preview. Sign-in is disabled until Sidra identity service is securely configured. No credentials were sent.';
   });
+  window.switchMain('hotels', true);
 })();
