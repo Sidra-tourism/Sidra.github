@@ -57,3 +57,12 @@ test('site supports navigable responsive booking layout with its own Sidra brand
   assert.match(css, /site-search/);
   assert.match(html, /Premium travel planning|Find your next journey/);
 });
+
+
+test('preview account form links remain clickable while all credential submissions are blocked', () => {
+  const js = readFileSync(new URL('../public/account.js', import.meta.url), 'utf8');
+  assert.match(js, /\$\('signInButton'\)\.disabled=true/);
+  assert.match(js, /\$\('createAccountButton'\)\.disabled=true/);
+  assert.match(js, /\$\('showSignUp'\)\.disabled=false/);
+  assert.match(js, /\$\('showRecovery'\)\.disabled=false/);
+});
