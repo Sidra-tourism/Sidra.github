@@ -1,0 +1,21 @@
+name: Sidra public sign-in entry checks
+on:
+  push:
+    branches: [feature/sidra-admin-signin-entry-20261116]
+  pull_request:
+    paths:
+      - 'public/signin.html'
+      - 'public/index.html'
+      - 'test/admin-entry.test.js'
+      - '.github/workflows/sidra-admin-entry.yml'
+permissions:
+  contents: read
+jobs:
+  entrypoint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test test/admin-entry.test.js
