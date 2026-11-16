@@ -87,6 +87,6 @@ test('sign-in route shows customer entry first and owner-admin entry after',()=>
 
 
 test('frontend revision versions the login assets for mobile cache refresh',()=>{
-  assert.match(html,/sidra-ota\.js\?v=20261116b/);
+  assert.match(html,/sidra-ota\.js\?v=20261116d/);
   assert.match(html,/sidra-ota\.css\?v=20261116b/);
 });
