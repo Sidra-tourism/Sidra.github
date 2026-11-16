@@ -23,4 +23,5 @@ jobs:
           node --check server.js
           node --check security.js
           node --check public/app.js
+      - run: npm install --no-audit --no-fund --ignore-scripts
       - run: npm test
