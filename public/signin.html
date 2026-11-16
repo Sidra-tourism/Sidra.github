@@ -11,7 +11,7 @@
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#16365f}.brand img{height:54px;width:54px;object-fit:contain}.brand strong{display:block;font-size:20px;letter-spacing:-.025em}.brand small{color:#75849a;font-size:12px}.back{font-size:13px;font-weight:700;text-decoration:none}
 main{max-width:1040px;margin:0 auto;min-height:calc(100dvh - 92px);padding:clamp(28px,6vw,65px) 18px}
 .eyebrow{color:#0c8295;letter-spacing:.12em;font-weight:800;font-size:11px}h1{font-size:clamp(31px,4vw,45px);letter-spacing:-.04em;margin:10px 0}p{line-height:1.6;color:#63778e}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:28px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin-top:28px}.customer-login{grid-column:1;grid-row:1}.admin-login{grid-column:2;grid-row:1}
 .card{background:#fff;border:1px solid #dbe5ee;border-radius:20px;padding:clamp(22px,3vw,35px);box-shadow:0 14px 30px #244d7c12}
 .card h2{font-size:23px;color:#174168;margin:4px 0}.card p{font-size:13px}
 .card label{display:block;font-size:13px;font-weight:750;color:#2e5274;margin:16px 0 8px}
@@ -22,7 +22,7 @@ main{max-width:1040px;margin:0 auto;min-height:calc(100dvh - 92px);padding:clamp
 .note{background:#eff8fc;border:1px solid #d7ebf4;border-radius:12px;padding:14px 16px;color:#49738b;font-size:12px;margin:22px 0 0}.tag{display:inline-block;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:850;background:#e5f8f5;color:#0a777f;margin:15px 0}.admin{background:radial-gradient(circle at 100% 0,#e6f6fb,transparent 55%),#fff}
 .secure{display:grid;gap:11px;margin:25px 0 0}.secure span{font-size:13px;color:#4e6f88;font-weight:650}
 footer{text-align:center;font-size:12px;color:#8897aa;margin-top:42px}
-@media(max-width:720px){header{padding:12px 17px}.brand img{height:48px;width:48px}.brand strong{font-size:17px}.grid{grid-template-columns:1fr}.card{padding:24px}.back{max-width:98px;text-align:right}}
+@media(max-width:720px){.customer-login{grid-column:1;grid-row:auto}.admin-login{grid-column:1;grid-row:auto}header{padding:12px 17px}.brand img{height:48px;width:48px}.brand strong{font-size:17px}.grid{grid-template-columns:1fr}.card{padding:24px}.back{max-width:98px;text-align:right}}
 </style>
 </head>
 <body>
@@ -32,7 +32,7 @@ footer{text-align:center;font-size:12px;color:#8897aa;margin-top:42px}
 <h1>Welcome to Sidra Tourism</h1>
 <p>Select your account type. Customer accounts and administrator access are separate for your security.</p>
 <div class="grid">
- <section class="card" aria-label="Customer account sign in">
+ <section class="card customer-login" id="customerSignInCard" aria-label="Customer account sign in">
   <h2>Customer Sign In</h2><p>Manage your travel requests and reservations once membership services are activated.</p>
   <div class="note" role="status">Customer account sign-in is not yet activated. Please contact the Sidra Tourism team for assistance with existing bookings.</div>
   <label for="customerEmail">Email / Username</label><input id="customerEmail" type="text" autocomplete="username" disabled placeholder="Email address or username">
@@ -40,7 +40,7 @@ footer{text-align:center;font-size:12px;color:#8897aa;margin-top:42px}
   <button type="button" class="btn" disabled>Customer Sign In</button>
   <div class="links"><span class="inactive" aria-disabled="true">Forgot password?</span><span class="inactive" aria-disabled="true">Create a new account</span></div>
  </section>
- <section class="card admin" aria-label="Administrator account access">
+ <section class="card admin admin-login" id="adminSignInCard" aria-label="Administrator account access">
   <h2>Admin Sign In</h2>
   <p>Private management portal for verified Sidra Tourism administrators.</p>
   <span class="tag">SECURE ADMINISTRATOR ACCESS</span>
