@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {OWNER_EMAIL,OWNER_NAME,OWNER_ROLE,isOwner,configured,validPassword,safeOrigin} from './security.js';
+import {createOperationsRouter} from './operations-router.js';
 
 const app=express();
 const root=path.dirname(fileURLToPath(import.meta.url));
@@ -51,12 +52,13 @@ function setCookie(res,token,maxAge=3300){
 function clearCookie(res){
   res.clearCookie(sessionKey,{httpOnly:true,secure:true,sameSite:'strict',path:'/'});
 }
-async function provider(pathname,{method='GET',data,token}={}){
+async function provider(pathname,{method='GET',data,token,headers:extraHeaders}={}){
   const base=process.env.SIDRA_SUPABASE_URL;
   const url=base+pathname;
   const headers={apikey:process.env.SIDRA_SUPABASE_PUBLISHABLE_KEY,accept:'application/json'};
   if(data!==undefined)headers['content-type']='application/json';
   if(token)headers.authorization='Bearer '+token;
+  if(extraHeaders?.Prefer==='return=representation')headers.Prefer='return=representation';
   let response;
   try{
     response=await fetch(url,{method,headers,body:data===undefined?undefined:JSON.stringify(data),signal:AbortSignal.timeout(9000)});
@@ -143,6 +145,7 @@ app.get('/api/workspace',owner,(req,res)=>{
     alerts:['No live ticketing or payment operations are enabled through this admin portal.']
   });
 });
+app.use('/api/ops',createOperationsRouter({provider,ownerOnly:owner,checkWriteOrigin}));
 app.use(express.static(path.join(root,'public'),{index:false,etag:true,maxAge:'5m'}));
 app.get('/',(_req,res)=>res.sendFile(path.join(root,'public','index.html')));
 app.use('/api',(_req,res)=>send(res,404,{error:'Not found'}));
