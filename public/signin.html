@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign In | Sidra Tourism</title>
+<meta name="description" content="Customer sign-in and secure Sidra Tourism administrator access.">
+<meta name="robots" content="noindex">
+<style>
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#1a304f;background:#f4f7fc}
+*{box-sizing:border-box}body{margin:0}button,input{font:inherit}a{color:#1269b4}header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px clamp(16px,4vw,60px);background:white;border-bottom:1px solid #e4ebf2}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#16365f}.brand img{height:54px;width:54px;object-fit:contain}.brand strong{display:block;font-size:20px;letter-spacing:-.025em}.brand small{color:#75849a;font-size:12px}.back{font-size:13px;font-weight:700;text-decoration:none}
+main{max-width:1040px;margin:0 auto;min-height:calc(100dvh - 92px);padding:clamp(28px,6vw,65px) 18px}
+.eyebrow{color:#0c8295;letter-spacing:.12em;font-weight:800;font-size:11px}h1{font-size:clamp(31px,4vw,45px);letter-spacing:-.04em;margin:10px 0}p{line-height:1.6;color:#63778e}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:28px}
+.card{background:#fff;border:1px solid #dbe5ee;border-radius:20px;padding:clamp(22px,3vw,35px);box-shadow:0 14px 30px #244d7c12}
+.card h2{font-size:23px;color:#174168;margin:4px 0}.card p{font-size:13px}
+.card label{display:block;font-size:13px;font-weight:750;color:#2e5274;margin:16px 0 8px}
+.card input{width:100%;border:1px solid #c8d7e7;border-radius:10px;background:#f9fbfe;padding:13px;color:#41536b}.card input:disabled{opacity:.75;cursor:not-allowed}
+.btn{display:flex;justify-content:center;align-items:center;text-decoration:none;border:0;border-radius:12px;padding:14px 18px;font-weight:800;width:100%;margin-top:22px}
+.primary{color:#fff;background:linear-gradient(115deg,#1980bf,#1b62b6)}.primary:hover{filter:brightness(.95)}button.btn:disabled{background:#d9e4ef;color:#6f8092;cursor:not-allowed}
+.links{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;margin-top:18px;font-size:12px}.inactive{color:#8190a4;text-decoration:none}
+.note{background:#eff8fc;border:1px solid #d7ebf4;border-radius:12px;padding:14px 16px;color:#49738b;font-size:12px;margin:22px 0 0}.tag{display:inline-block;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:850;background:#e5f8f5;color:#0a777f;margin:15px 0}.admin{background:radial-gradient(circle at 100% 0,#e6f6fb,transparent 55%),#fff}
+.secure{display:grid;gap:11px;margin:25px 0 0}.secure span{font-size:13px;color:#4e6f88;font-weight:650}
+footer{text-align:center;font-size:12px;color:#8897aa;margin-top:42px}
+@media(max-width:720px){header{padding:12px 17px}.brand img{height:48px;width:48px}.brand strong{font-size:17px}.grid{grid-template-columns:1fr}.card{padding:24px}.back{max-width:98px;text-align:right}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/" aria-label="Sidra Tourism homepage"><img src="/logo.png" alt="Sidra Tourism logo"><span><strong>Sidra Tourism</strong><small>Travel Beyond Expectations</small></span></a><a href="/" class="back">Back to travel search</a></header>
+<main>
+<p class="eyebrow">SIDRA TOURISM • ACCOUNT ACCESS</p>
+<h1>Welcome to Sidra Tourism</h1>
+<p>Select your account type. Customer accounts and administrator access are separate for your security.</p>
+<div class="grid">
+ <section class="card" aria-label="Customer account sign in">
+  <h2>Customer Sign In</h2><p>Manage your travel requests and reservations once membership services are activated.</p>
+  <div class="note" role="status">Customer account sign-in is not yet activated. Please contact the Sidra Tourism team for assistance with existing bookings.</div>
+  <label for="customerEmail">Email / Username</label><input id="customerEmail" type="text" autocomplete="username" disabled placeholder="Email address or username">
+  <label for="customerPassword">Password</label><input id="customerPassword" type="password" autocomplete="current-password" disabled placeholder="Password">
+  <button type="button" class="btn" disabled>Customer Sign In</button>
+  <div class="links"><span class="inactive" aria-disabled="true">Forgot password?</span><span class="inactive" aria-disabled="true">Create a new account</span></div>
+ </section>
+ <section class="card admin" aria-label="Administrator account access">
+  <h2>Admin Sign In</h2>
+  <p>Private management portal for verified Sidra Tourism administrators.</p>
+  <span class="tag">SECURE ADMINISTRATOR ACCESS</span>
+  <div class="secure"><span>Dedicated admin subdomain</span><span>Owner verification required</span><span>Bookings and customer records remain protected</span></div>
+  <a class="btn primary" href="https://admin.sidra-tourism.com/">Admin Sign In</a>
+  <p class="note">Administrators sign in with their assigned credentials. Public admin registration is not available.</p>
+ </section>
+</div>
+<footer>© 2026 Sidra Tourism. Customer and administrator credentials must never be shared.</footer>
+</main>
+</body></html>
