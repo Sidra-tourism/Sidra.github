@@ -16,7 +16,7 @@ test('supplier booking created and pending ticket events preserve pending status
   assert.equal(shouldSendTicketEmail(b),false);
 });
 test('ticket email requires verified supplier-issued confirmation and ticket number',()=>{
-  const pending={status:'ticket_pending',reference:'ABC123'};
+  const pending={status:'ticket_pending',reference:'ABC123',payment_status:'succeeded'};
   assert.throws(()=>transitionFlightBooking(pending,{type:'supplier.ticket_issued',id:'evt4',verified:false,ticketNumber:'1234567890123'}),/verified/i);
   assert.throws(()=>transitionFlightBooking(pending,{type:'supplier.ticket_issued',id:'evt4',verified:true}),/ticket/i);
   const issued=transitionFlightBooking(pending,{type:'supplier.ticket_issued',id:'evt4',verified:true,ticketNumber:'1234567890123'});
@@ -24,6 +24,12 @@ test('ticket email requires verified supplier-issued confirmation and ticket num
   assert.equal(issued.ticketNumber,'1234567890123');
   assert.equal(shouldSendTicketEmail(issued),true);
   assert.ok(nextOperationalActions(issued).includes('send_customer_ticket_notice'));
+});
+test('never issue customer ticket emails unless the payment ledger also shows success',()=>{
+  assert.equal(shouldSendTicketEmail({status:'ticket_issued',reference:'ABC123',ticketNumber:'1234567890123',payment_status:'pending'}),false);
+  assert.equal(shouldSendTicketEmail({status:'ticket_issued',reference:'ABC123',ticketNumber:'1234567890123',payment_status:'succeeded'}),true);
+  const paid=transitionFlightBooking({status:'payment_pending'}, {type:'payment.succeeded',id:'payevt1',verified:true});
+  assert.equal(paid.payment_status,'succeeded');
 });
 test('an event cannot skip booking stages or replace a completed ticket',()=>{
   assert.throws(()=>transitionFlightBooking({status:'payment_pending'}, {type:'supplier.ticket_issued',id:'e1',verified:true,ticketNumber:'1234567890123'}),/transition/i);
