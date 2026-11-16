@@ -3,14 +3,14 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#102d50">
 <title>Sidra Tourism | Admin Portal</title><link rel="stylesheet" href="/style.css">
-<script defer src="/app.js"></script></head>
+<script defer src="/app.js"></script><script defer src="/operations-ui.js"></script></head>
 <body>
 <header class="topbar">
   <a href="https://sidra-tourism.com/" class="brand" aria-label="Sidra Tourism home">
     <img src="https://sidra-tourism.com/logo.png" alt="Sidra Tourism logo" width="52" height="52">
     <span><strong>Sidra Tourism</strong><small>Private Administration</small></span>
   </a>
-  <div class="topbar-actions"><span class="portal-indicator">Admin Workspace</span><button id="signOut" type="button" class="btn ghost hidden">Sign out</button></div>
+  <div class="topbar-actions"><button type="button" id="sidebarToggle" class="btn ghost hidden" aria-label="Toggle admin sidebar">☰ Menu</button><span class="portal-indicator">Admin Workspace</span><button id="signOut" type="button" class="btn ghost hidden">Sign out</button></div>
 </header>
 <main id="app">
   <div id="authWrap" class="auth-layout">
@@ -67,7 +67,19 @@
         <button type="button" class="nav-item" data-view="bookings"><span aria-hidden="true">✈</span> Bookings</button>
         <button type="button" class="nav-item" data-view="enquiries"><span aria-hidden="true">✉</span> Enquiries</button>
         <button type="button" class="nav-item" data-view="customers"><span aria-hidden="true">♙</span> Customers</button>
+        <button type="button" class="nav-item" data-view="flights"><span aria-hidden="true">✈</span> Flights Desk</button>
+        <button type="button" class="nav-item" data-view="hotels"><span aria-hidden="true">▣</span> Hotels Desk</button>
+        <button type="button" class="nav-item" data-view="transfers"><span aria-hidden="true">▤</span> Cars &amp; Transfers</button>
+        <button type="button" class="nav-item" data-view="experiences"><span aria-hidden="true">☀</span> Qatar Experiences</button>
+        <button type="button" class="nav-item" data-view="finance"><span aria-hidden="true">▰</span> Finance &amp; Payments</button>
+        <button type="button" class="nav-item" data-view="suppliers"><span aria-hidden="true">◎</span> Suppliers</button>
+        <button type="button" class="nav-item" data-view="iata"><span aria-hidden="true">◈</span> IATA &amp; Distribution</button>
         <button type="button" class="nav-item" data-view="integrations"><span aria-hidden="true">⌘</span> Integrations</button>
+        <button type="button" class="nav-item" data-view="notifications"><span aria-hidden="true">♧</span> Notifications</button>
+        <button type="button" class="nav-item" data-view="reports"><span aria-hidden="true">▥</span> Reports</button>
+        <button type="button" class="nav-item" data-view="audit"><span aria-hidden="true">≡</span> Audit Trail</button>
+        <button type="button" class="nav-item" data-view="documents"><span aria-hidden="true">▤</span> Documents</button>
+        <button type="button" class="nav-item" data-view="settings"><span aria-hidden="true">⚙</span> Settings</button>
         <button type="button" class="nav-item" data-view="profile"><span aria-hidden="true">◉</span> My Profile</button>
       </nav>
       <div class="side-footer"><div class="avatar small">IM</div><div><b id="sideName">Imath Mohamed Marzook</b><small>Admin</small></div></div>
@@ -84,10 +96,56 @@
         </div>
         <section class="surface"><h3>Operational readiness</h3><div id="integrationList" class="rows"></div></section>
       </section>
-      <section id="bookingsView" class="view hidden"><div class="surface"><h3>Bookings</h3><p>Verified flight and hotel bookings will appear here when the authorized supplier integrations are connected. No sample reservations are displayed as real.</p></div></section>
-      <section id="enquiriesView" class="view hidden"><div class="surface"><h3>Customer enquiries</h3><p>The administration queue is being prepared. Requests are not yet synchronized with a verified customer database.</p></div></section>
-      <section id="customersView" class="view hidden"><div class="surface"><h3>Customer accounts</h3><p>Customer membership and account management will be available only after the separate customer authentication system is verified.</p></div></section>
+      <section id="bookingsView" class="view hidden"><div class="surface"><h3>Reservations and booking queue</h3><p>These records are read from the Sidra database. The system does not issue airline tickets from the admin interface.</p><div id="bookingsTable" class="ops-list"></div></div></section>
+      <section id="enquiriesView" class="view hidden">
+ <div class="surface"><h3>Travel enquiry inbox</h3><p>Review incoming and manually logged travel requests. The public website is not yet connected to this private queue.</p><div id="enquiriesTable" class="ops-list"></div></div>
+ <div class="surface"><h3>Log a travel enquiry</h3><form id="enquiryForm" class="ops-form">
+ <label>Guest name<input name="customerName" required minlength="2" maxlength="90"></label>
+ <label>Guest email<input name="customerEmail" type="email" required></label>
+ <label>Travel service<select name="service"><option value="flights">Flights</option><option value="hotels">Hotels</option><option value="cars">Car rental</option><option value="transfers">Airport transport</option><option value="holidays">Holidays</option><option value="experiences">Experiences</option><option value="other">Other</option></select></label>
+ <label class="span-2">Request details<textarea name="message" rows="3" minlength="15" maxlength="3000" required></textarea></label>
+ <button class="btn primary" type="submit">Save enquiry in Sidra</button>
+ </form><p id="enquiryAction" class="ops-action" role="status"></p></div>
+</section>
+      <section id="customersView" class="view hidden"><div class="surface"><h3>Customer directory</h3><p>Private customer records appear here once the authorized customer database is connected. Customer self-registration remains disabled.</p><div id="customersTable" class="ops-list"></div></div></section>
       <section id="integrationsView" class="view hidden"><div class="surface"><h3>Supplier and platform connections</h3><div id="integrationDetails" class="rows"></div><p class="help">No live ticket issuance, card payments, or supplier configuration changes are available from this workspace.</p></div></section>
+
+      <section id="flightsView" class="view hidden"><div class="surface"><h3>Flight operations and ticketing</h3><div class="ops-progress"><span>Search</span><span>Verify fare</span><span>Prebook</span><span>Payment verified</span><span>Supplier confirmation</span><span>Ticket issued</span><span>Customer notified</span></div><p>Payment alone is not ticket issuance. A supplier-verified ticket number and confirmation reference are required before sending final e-tickets. Ticket issuance remains disabled until production supplier approval and end-to-end verification.</p><div id="flightsStatus" class="ops-list"></div></div></section>
+      <section id="hotelsView" class="view hidden"><div class="surface"><h3>Hotel operations</h3><p>Nuitée production account is available. The Sidra website has not yet verified a production hotel rates → prebook → payment → booking workflow. Inventory is not shown as live here.</p><div id="hotelsStatus" class="ops-list"></div></div></section>
+      <section id="transfersView" class="view hidden"><div class="surface"><h3>Cars, airport transfers and transportation</h3><p>Manage supplier agreements and customer enquiries for airport pickup, drop-off, chauffeur services and car hire. Automated vendor reservations require approved integrations and confirmed availability.</p><div class="ops-tags"><span>Airport transfer</span><span>Car rental</span><span>Private transport</span><span>Group transport</span></div><p class="help">No unverified pricing or transport inventory is presented as bookable.</p></div></section>
+      <section id="experiencesView" class="view hidden">
+        <div class="surface"><h3>Qatar desert and cultural experiences</h3><p>Enquiry-only proposals, subject to availability and confirmation by a licensed local operator. No payment or travel confirmation is issued from these drafts.</p>
+         <div class="experience-cards">
+          <article><div class="exp-symbol" aria-hidden="true">☀</div><h4>Khor Al Adaid guided sightseeing</h4><p>Discover Qatar's Inland Sea scenery and desert coastline with an experienced licensed local operator.</p><small>Enquiry-only • Operator and availability pending</small></article>
+          <article><div class="exp-symbol" aria-hidden="true">◒</div><h4>Doha desert sunset excursion</h4><p>A planned escorted sightseeing experience focused on landscape views and local hospitality.</p><small>Enquiry-only • Operator and availability pending</small></article>
+          <article><div class="exp-symbol" aria-hidden="true">✦</div><h4>Qatar culture and nature day</h4><p>Curated city and desert scenery, nature viewing and cultural stops with approved guides.</p><small>Enquiry-only • Operator and availability pending</small></article>
+         </div>
+        </div>
+        <div class="surface"><h3>Experience catalogue drafts</h3><div id="experiencesTable" class="ops-list"></div>
+          <form id="experienceForm" class="ops-form">
+            <label>Experience title<input name="title" required minlength="8" maxlength="130"></label>
+            <label>Location<input name="location" required minlength="3" maxlength="110"></label>
+            <label>Approximate duration<input name="duration" required minlength="3" maxlength="70"></label>
+            <label class="span-2">Description<textarea name="summary" rows="3" required minlength="30" maxlength="1200"></textarea></label>
+            <button class="btn primary" type="submit">Save as private draft</button>
+          </form><p id="experienceAction" class="ops-action" role="status"></p>
+        </div>
+      </section>
+      <section id="financeView" class="view hidden"><div class="surface"><h3>Finance and payment reconciliation</h3><p>Supplier settlement, payment success, refunds and disputes require independently verified payment events. The admin portal never marks a flight as ticketed from a card payment alone.</p><div id="paymentsTable" class="ops-list"></div></div></section>
+      <section id="suppliersView" class="view hidden"><div class="surface"><h3>Supplier management</h3><p>Maintain approved distribution providers and operating partners. Actual supplier connections must be verified before live bookings.</p><div id="suppliersTable" class="ops-list"></div></div></section>
+      <section id="iataView" class="view hidden">
+        <div class="surface"><h3>IATA / IATAN identity and airline distribution</h3>
+          <div class="ops-tags"><span>Agency: SIDRA TOURISM LLC</span><span>Doha, Qatar</span><span>Director: Imath Mohamed Marzook</span><span>IATA/IATAN ID card presented</span></div>
+          <p><strong>Agency-level verification pending.</strong> The director's IATA/IATAN identification is not sufficient to prove BSP settlement, airline ticketing authority or permission to use the official accredited-agency logo on public pages.</p>
+          <div class="ops-progress"><span>IATA agency verification</span><span>BSP / BSPlink permissions</span><span>Airline distribution API</span><span>Live fare tests</span><span>Ticketing and refund tests</span></div>
+          <p class="help">The official IATA agent logo will only be displayed after permitted artwork and agency entitlement are verified. No live ticket issuance is enabled.</p>
+        </div>
+      </section>
+      <section id="notificationsView" class="view hidden"><div class="surface"><h3>Admin notifications</h3><p>Verified enquiry and booking events will appear here. No unverified email or ticket message is treated as delivered.</p><div id="notificationsTable" class="ops-list"></div></div></section>
+      <section id="reportsView" class="view hidden"><div class="surface"><h3>Operational reporting</h3><p>Actual counts from the Sidra database; no estimated sales, fabricated bookings or promotional revenue.</p><div id="summaryTable" class="ops-summary"></div></div></section>
+      <section id="auditView" class="view hidden"><div class="surface"><h3>Audit trail</h3><p>Record of authenticated changes to the internal enquiry workflow. No private credentials are displayed.</p><div id="auditTable" class="ops-list"></div></div></section>
+      <section id="documentsView" class="view hidden"><div class="surface"><h3>Travel documents and vouchers</h3><p>Supplier-issued itineraries, approved vouchers, invoices and ticket files will be available here after secure document storage, access controls and event verification are implemented.</p><p class="help">No fictional ticket or booking document can be generated from this screen.</p></div></section>
+      <section id="settingsView" class="view hidden"><div class="surface"><h3>Organization and access settings</h3><p>Sidra Tourism administrator access is owner-only. Staff roles, MFA, customer data retention, payment settings and regulated supplier keys are awaiting implementation and security review.</p><div class="ops-tags"><span>Owner access: enabled</span><span>Public admin signup: disabled</span><span>Live ticketing: disabled</span><span>Live payments: disabled</span></div></div></section>
       <section id="profileView" class="view hidden"><div class="surface profile-surface"><div class="avatar">IM</div><div><p class="eyebrow">ADMINISTRATOR PROFILE</p><h3 id="profileName">Imath Mohamed Marzook</h3><p class="muted">Sidra Tourism • Owner administration</p><div class="profile-fields"><p><span>Title</span><b>Admin</b></p><p><span>Email</span><b id="profileEmail">admin@sidra-tourism.com</b></p><p><span>Access</span><b>Owner only</b></p></div></div></div></section>
       <footer>© 2026 Sidra Tourism. Private administrator workspace. All supplier and financial activities require separate authorization.</footer>
     </div>
