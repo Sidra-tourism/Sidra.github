@@ -47,7 +47,6 @@
   position:relative;
   padding:70px 20px 35px!important;
   background:linear-gradient(125deg,#102d57 0%,#164d86 55%,#087fa2 100%)!important;
-  background-image:none!important;
   min-height:0!important;overflow:visible!important;
 }
 .editorial-layout .hero::before{display:none!important}
