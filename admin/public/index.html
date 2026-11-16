@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#102d50">
+<title>Sidra Tourism | Admin Portal</title><link rel="stylesheet" href="/style.css">
+<script defer src="/app.js"></script></head>
+<body>
+<header class="topbar">
+  <a href="https://sidra-tourism.com/" class="brand" aria-label="Sidra Tourism home">
+    <img src="https://sidra-tourism.com/logo.png" alt="Sidra Tourism logo" width="52" height="52">
+    <span><strong>Sidra Tourism</strong><small>Private Administration</small></span>
+  </a>
+  <div class="topbar-actions"><span class="portal-indicator">Admin Workspace</span><button id="signOut" type="button" class="btn ghost hidden">Sign out</button></div>
+</header>
+<main id="app">
+  <div id="authWrap" class="auth-layout">
+    <div class="auth-intro">
+      <div class="eyebrow">SIDRA TOURISM • PRIVATE PORTAL</div>
+      <h1>Your travel business,<br><em>in one workspace.</em></h1>
+      <p>A dedicated, secure place for Sidra's owner to oversee enquiries, reservations, integrations and operational readiness.</p>
+      <div class="auth-notes"><span>Owner-only access</span><span>Separate from customer bookings</span><span>Protected credentials</span></div>
+    </div>
+    <section class="auth-card" aria-labelledby="authTitle">
+      <div class="auth-icon" aria-hidden="true">S</div>
+      <h2 id="authTitle">Admin Sign In</h2>
+      <p class="intro-copy" id="authDescription">Sign in with your authorized administrator email and password.</p>
+      <div id="notice" class="notice" role="status" aria-live="polite"></div>
+      <form id="loginForm" autocomplete="on">
+        <label for="loginEmail">Email / Username</label><input id="loginEmail" name="email" type="email" autocomplete="username" required value="admin@sidra-tourism.com" maxlength="254">
+        <label for="loginPassword">Password</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required minlength="8">
+        <button class="btn primary" id="loginSubmit" type="submit">Sign in to Admin</button>
+        <button id="forgotLink" class="text-link" type="button">Forgot password?</button>
+      </form>
+      <form id="recoverForm" class="hidden" autocomplete="on">
+        <label for="recoverEmail">Administrator email</label><input type="email" id="recoverEmail" value="admin@sidra-tourism.com" required autocomplete="email">
+        <button class="btn primary" type="submit">Send password reset link</button>
+        <button id="backToLogin" class="text-link" type="button">Back to Sign In</button>
+      </form>
+      <form id="resetForm" class="hidden">
+        <p class="help">Choose a new password for your verified Sidra administrator account.</p>
+        <label for="resetPassword">New password</label><input id="resetPassword" type="password" autocomplete="new-password" minlength="14" required>
+        <label for="resetConfirm">Confirm new password</label><input id="resetConfirm" type="password" autocomplete="new-password" minlength="14" required>
+        <button class="btn primary" type="submit">Set new password</button>
+      </form>
+      <p class="auth-footer">Administrator access is by invitation only. <a href="https://sidra-tourism.com/">Return to Sidra Tourism</a></p>
+    </section>
+  </div>
+  <div id="passwordChangeWrap" class="change-wrap hidden">
+    <section class="auth-card">
+      <span class="eyebrow">FIRST SIGN IN</span><h2>Secure your admin account</h2>
+      <p class="intro-copy">Replace the temporary password before accessing the workspace.</p>
+      <div id="changeNotice" class="notice" role="status" aria-live="polite"></div>
+      <form id="changeForm">
+        <label for="currentPassword">Temporary password</label><input id="currentPassword" type="password" required autocomplete="current-password">
+        <label for="newPassword">New password</label><input id="newPassword" type="password" required minlength="14" autocomplete="new-password">
+        <label for="confirmPassword">Confirm new password</label><input id="confirmPassword" type="password" required minlength="14" autocomplete="new-password">
+        <p class="help">At least 14 characters, including uppercase, lowercase, a number and a symbol.</p>
+        <button class="btn primary" type="submit">Change password</button>
+      </form>
+    </section>
+  </div>
+  <div id="workspaceWrap" class="workspace hidden">
+    <aside class="sidebar">
+      <div class="side-heading">ADMINISTRATION</div>
+      <nav aria-label="Admin navigation">
+        <button type="button" class="nav-item active" data-view="overview"><span aria-hidden="true">▦</span> Overview</button>
+        <button type="button" class="nav-item" data-view="bookings"><span aria-hidden="true">✈</span> Bookings</button>
+        <button type="button" class="nav-item" data-view="enquiries"><span aria-hidden="true">✉</span> Enquiries</button>
+        <button type="button" class="nav-item" data-view="customers"><span aria-hidden="true">♙</span> Customers</button>
+        <button type="button" class="nav-item" data-view="integrations"><span aria-hidden="true">⌘</span> Integrations</button>
+        <button type="button" class="nav-item" data-view="profile"><span aria-hidden="true">◉</span> My Profile</button>
+      </nav>
+      <div class="side-footer"><div class="avatar small">IM</div><div><b id="sideName">Imath Mohamed Marzook</b><small>Admin</small></div></div>
+    </aside>
+    <div class="workspace-main">
+      <div class="page-top"><div><p class="eyebrow">SIDRA TOURISM • ADMINISTRATION</p><h1 id="viewTitle">Overview</h1><p id="viewDesc" class="muted">Monitor the Sidra Tourism platform and its integrations.</p></div><span class="role-label">ADMIN</span></div>
+      <div id="workspaceNotice" class="notice" role="status" aria-live="polite"></div>
+      <section id="overviewView" class="view">
+        <div class="welcome-card"><div><div class="eyebrow light">ADMIN WORKSPACE</div><h2>Welcome, <span id="welcomeName">Imath</span>.</h2><p>Keep every part of Sidra Tourism organized. You remain in control of access and operations.</p></div><div class="welcome-graphic" aria-hidden="true">✧</div></div>
+        <div class="dashboard-grid">
+          <div class="metric"><span>Flight bookings</span><strong>Pending</strong><small>Live booking integration not yet enabled</small></div>
+          <div class="metric"><span>Hotel reservations</span><strong>Setup</strong><small>Nuitée connectivity undergoing validation</small></div>
+          <div class="metric"><span>Enquiry management</span><strong>Preparing</strong><small>Administrator queue not yet connected</small></div>
+        </div>
+        <section class="surface"><h3>Operational readiness</h3><div id="integrationList" class="rows"></div></section>
+      </section>
+      <section id="bookingsView" class="view hidden"><div class="surface"><h3>Bookings</h3><p>Verified flight and hotel bookings will appear here when the authorized supplier integrations are connected. No sample reservations are displayed as real.</p></div></section>
+      <section id="enquiriesView" class="view hidden"><div class="surface"><h3>Customer enquiries</h3><p>The administration queue is being prepared. Requests are not yet synchronized with a verified customer database.</p></div></section>
+      <section id="customersView" class="view hidden"><div class="surface"><h3>Customer accounts</h3><p>Customer membership and account management will be available only after the separate customer authentication system is verified.</p></div></section>
+      <section id="integrationsView" class="view hidden"><div class="surface"><h3>Supplier and platform connections</h3><div id="integrationDetails" class="rows"></div><p class="help">No live ticket issuance, card payments, or supplier configuration changes are available from this workspace.</p></div></section>
+      <section id="profileView" class="view hidden"><div class="surface profile-surface"><div class="avatar">IM</div><div><p class="eyebrow">ADMINISTRATOR PROFILE</p><h3 id="profileName">Imath Mohamed Marzook</h3><p class="muted">Sidra Tourism • Owner administration</p><div class="profile-fields"><p><span>Title</span><b>Admin</b></p><p><span>Email</span><b id="profileEmail">admin@sidra-tourism.com</b></p><p><span>Access</span><b>Owner only</b></p></div></div></div></section>
+      <footer>© 2026 Sidra Tourism. Private administrator workspace. All supplier and financial activities require separate authorization.</footer>
+    </div>
+  </div>
+</main>
+</body></html>
