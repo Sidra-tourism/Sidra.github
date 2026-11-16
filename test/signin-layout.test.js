@@ -34,3 +34,16 @@ test('hero uses an image-free Sidra branded background while booking fields rema
   assert.match(home, /id="toCountry"/);
   assert.match(home, /id="departureDate"/);
 });
+
+test('admin sign-in button is directly below customer recovery links and not duplicated on right', () => {
+  const customerCard = signin.match(/<section class="card customer-login"[\s\S]*?<\/section>/)?.[0];
+  const adminCard = signin.match(/<section class="card admin admin-login"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(customerCard && adminCard);
+  const forgot = customerCard.indexOf('Forgot password?');
+  const linksEnd = customerCard.indexOf('</div>', forgot);
+  const adminButton = customerCard.indexOf('id="adminSignInButton"');
+  assert.ok(forgot > 0 && linksEnd > forgot && adminButton > linksEnd, 'Admin button is immediately after the recovery links');
+  assert.match(customerCard, /<a[^>]*id="adminSignInButton"[^>]*href="https:\/\/admin\.sidra-tourism\.com\/"[^>]*>Admin Sign In<\/a>/);
+  assert.doesNotMatch(adminCard, /<a[^>]+href="https:\/\/admin\.sidra-tourism\.com\/"[^>]*>Admin Sign In<\/a>/);
+  assert.equal((signin.match(/id="adminSignInButton"/g)||[]).length,1);
+});
