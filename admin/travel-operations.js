@@ -24,16 +24,20 @@ export function transitionFlightBooking(booking,event){
     if(!/^[A-Za-z0-9]{4,12}$/.test(String(booking.reference||event.bookingReference||'')))throw error('Supplier booking reference required');
   }
   const result={...booking,status:target,lastEventId:event.id,updatedAt:new Date().toISOString()};
+  if(event.type==='payment.succeeded')result.payment_status='succeeded';
+  if(event.type==='payment.failed')result.payment_status='failed';
+  if(event.type==='payment.refunded')result.payment_status='refunded';
   if(event.bookingReference&&/^[A-Za-z0-9]{4,12}$/.test(event.bookingReference))result.reference=event.bookingReference;
   if(event.type==='supplier.ticket_issued')result.ticketNumber=event.ticketNumber;
   return result;
 }
 export function shouldSendTicketEmail(booking){
-  return booking?.status==='ticket_issued'&&/^[A-Za-z0-9]{4,12}$/.test(String(booking.reference||''))&&
+  return booking?.status==='ticket_issued'&&booking?.payment_status==='succeeded'&&/^[A-Za-z0-9]{4,12}$/.test(String(booking.reference||''))&&
     /^[0-9]{10,15}$/.test(String(booking.ticketNumber||''));
 }
 export function nextOperationalActions(booking){
   if(shouldSendTicketEmail(booking))return ['notify_admin','send_customer_ticket_notice'];
+  if(booking?.status==='ticket_issued'&&!shouldSendTicketEmail(booking))return ['notify_admin','manual_payment_reconciliation_required'];
   if(['payment_failed','failed','refunded'].includes(booking?.status))return ['notify_admin','review_refund_or_customer_contact'];
   if(['payment_confirmed','supplier_pending','ticket_pending'].includes(booking?.status))return ['notify_admin','monitor_supplier_confirmation'];
   return [];
