@@ -3,6 +3,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import { validateFlightSearch } from "./flight-policy.js";
+import { timingSafeEqual } from "node:crypto";
+import { isSandboxPreviewEnabled,makeSandboxClient } from "./nuitee-sandbox.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +33,44 @@ async function sendMailSafe({ to, subject, text }) {
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "working", message: "Sidra Tourism API Running" });
+});
+
+
+/* SIDRA: Private preview of Nuitée HOTEL SANDBOX. This cannot run on production
+   Vercel deployments, cannot use a production key, and cannot issue bookings. */
+app.use("/api/hotel-sandbox", (req,res,next)=>{
+  res.set("Cache-Control","no-store");
+  res.set("X-Robots-Tag","noindex, nofollow");
+  if(!isSandboxPreviewEnabled(process.env))
+    return res.status(503).json({code:"HOTEL_SANDBOX_DISABLED",message:"Hotel sandbox is not enabled."});
+  const expected=process.env.SIDRA_NUITEE_PREVIEW_TOKEN;
+  const supplied=(req.get("authorization")||"").replace(/^Bearer /i,"");
+  if(typeof expected!=="string"||expected.length<32||supplied.length>256){
+    return res.status(401).json({code:"PREVIEW_AUTH_REQUIRED"});
+  }
+  const a=Buffer.from(expected),b=Buffer.from(supplied);
+  if(a.length!==b.length||!timingSafeEqual(a,b))
+    return res.status(401).json({code:"PREVIEW_AUTH_REQUIRED"});
+  next();
+});
+app.get("/api/hotel-sandbox/places",async(req,res)=>{
+  try{
+    const sandboxClient=makeSandboxClient({apiKey:process.env.SIDRA_NUITEE_SANDBOX_API_KEY});
+    const places=await sandboxClient.places(req.query.q);
+    return res.json({sandbox:true,places,bookingEnabled:false});
+  }catch(error){
+    return res.status([422,502,503].includes(error.status)?error.status:503)
+      .json({code:"HOTEL_SANDBOX_LOOKUP_ERROR",message:error.message});
+  }
+});
+app.post("/api/hotel-sandbox/rates",async(req,res)=>{
+  try{
+    const sandboxClient=makeSandboxClient({apiKey:process.env.SIDRA_NUITEE_SANDBOX_API_KEY});
+    return res.json(await sandboxClient.rates(req.body));
+  }catch(error){
+    return res.status([422,502,503].includes(error.status)?error.status:503)
+      .json({code:"HOTEL_SANDBOX_RATES_ERROR",message:error.message});
+  }
 });
 
 app.get("/api/flight-search", (req, res) => {
