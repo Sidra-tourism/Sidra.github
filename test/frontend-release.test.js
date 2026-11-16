@@ -59,16 +59,16 @@ test('the live release contains no new authentication or payment backend',()=>{
   assert.doesNotMatch(ota,/innerHTML\s*\+=\s*[^'"]/);
 });
 
-test('footer account entry opens the preview dialog and release assets bypass stale mobile cache',()=>{
-  assert.match(html,/href="#signin">My Sidra account<\/a>/);
-  assert.match(ota,/footer a\[href="#signin"\]/);
+test('footer account entry opens the sign-in page and release assets bypass stale mobile cache',()=>{
+  assert.match(html,/href="\/signin\.html">My Sidra account<\/a>/);
+  assert.match(html,/class="account-icon" href="\/signin\.html"/);
   assert.match(html,/sidra-ota\.css\?v=20261116/);
   assert.match(html,/sidra-ota\.js\?v=20261116/);
 });
 
 
 test('sign-in layout presents exact customer wording in requested order',()=>{
-  assert.match(html,/class="account-icon"[^>]*aria-label="Sign in"[^>]*title="Sign in"/);
+  assert.match(html,/class="account-icon"[^>]*aria-label="Sign In"[^>]*title="Sign In"/);
   assert.doesNotMatch(html,/Sign in or sign up/);
   assert.match(ota,/accountLabel\.textContent='Sign in'/);
   const email=ota.indexOf('<label for="previewLoginIdentifier">Email / Username</label>');

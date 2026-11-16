@@ -23,7 +23,7 @@ test('original Sidra brand and booking categories are preserved and expanded',()
   assert.deepEqual(types.slice(0,6),['flights','hotels','cars','holidays','experiences','cruises']);
   assert.match(ota,/Rent a car/);
   assert.match(ota,/Transport/);
-  assert.match(html,/aria-label="Sign in" title="Sign in"/);
+  assert.match(html,/aria-label="Sign In" title="Sign In"/);
 });
 
 test('below-the-fold layout has promotion, swipeable travel cards, benefits, stays and holiday packages',()=>{
