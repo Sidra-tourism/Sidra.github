@@ -24,4 +24,6 @@ jobs:
           node --check security.js
           node --check public/app.js
       - run: npm install --no-audit --no-fund --ignore-scripts
+      - name: Install admin runtime dependencies for API tests
+        run: npm install --ignore-scripts --no-audit --no-fund --package-lock=false
       - run: npm test
