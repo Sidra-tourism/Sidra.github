@@ -1,0 +1,30 @@
+name: Sidra sign-in placement and clean background preview
+on:
+  push:
+    branches:
+      - fix/sidra-signin-placement-no-hero-photo-20261116
+    paths:
+      - 'public/signin.html'
+      - 'public/sidra-editorial.css'
+      - 'test/signin-layout.test.js'
+      - '.github/workflows/sidra-signin-layout.yml'
+  pull_request:
+    paths:
+      - 'public/signin.html'
+      - 'public/sidra-editorial.css'
+      - 'test/signin-layout.test.js'
+      - '.github/workflows/sidra-signin-layout.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check server.js
+      - name: Flight validation and sign-in layout regression
+        run: node --test test/flight-safety.test.js test/admin-entry.test.js test/signin-layout.test.js
