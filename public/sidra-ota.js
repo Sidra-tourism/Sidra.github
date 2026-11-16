@@ -275,43 +275,9 @@
   byId('carArea').querySelector('.ota-car-search').addEventListener('click',searchCarService);
 
   /* Visually preview the sign-in popover. Never send or persist input credentials. */
-  const dialog = document.createElement('dialog'); dialog.id = 'quickSignIn'; dialog.className='ota-login-dialog';
-  dialog.setAttribute('aria-labelledby','previewSignInTitle');
-  dialog.innerHTML = [
-    '<div class="ota-login-heading"><div><span class="ota-eyebrow">MY SIDRA ACCOUNT</span><h2 id="previewSignInTitle">Welcome back</h2><p>Your trips, saved guests and travel profile in one place.</p></div><button id="closeQuickSignIn" type="button" aria-label="Close sign-in preview">✕</button></div>',
-    '<form id="previewLoginForm" autocomplete="off">',
-    '<label for="previewLoginIdentifier">Email / Username</label><input id="previewLoginIdentifier" type="text" autocomplete="username" placeholder="Email or username">',
-    '<label for="previewLoginPassword">Password</label><input id="previewLoginPassword" type="password" autocomplete="current-password" placeholder="Password">',
-    '<div class="ota-login-links"><button type="button" id="previewSignup">Create a new account</button><button type="button" id="previewRecovery">Forgot password?</button></div>',
-    '<button class="ota-login-cta" type="submit">Sign in</button>',
-    '<p id="quickSignInNotice" role="status">UI preview only. Authentication is not activated; do not enter real credentials.</p></form>',
-    '<section id="quickSignupPreview" class="ota-auth-preview" hidden><h3>Create a new account</h3><p>Account registration will become available after secure sign-up is activated.</p><label>Full name<input type="text" placeholder="Full name" disabled></label><label>Email address<input type="email" placeholder="Email address" disabled></label><label>Password<input type="password" placeholder="Choose a password" disabled></label><button type="button" class="ota-go-back">Back to sign in</button></section>',
-    '<section id="quickRecoveryPreview" class="ota-auth-preview" hidden><h3>Forgot password?</h3><p>Password recovery is not yet activated for Sidra Tourism.</p><label>Email address<input type="email" placeholder="Registered email" disabled></label><button type="button" class="ota-go-back">Back to sign in</button></section>'
-  ].join('');
-  document.querySelector('.site-header').insertAdjacentElement('afterend',dialog);
-  const icon=document.querySelector('.site-header .account-icon');
-  const accountLabel = document.createElement('span'); accountLabel.className='account-text'; accountLabel.textContent='Sign in'; icon.append(accountLabel);
-  icon.setAttribute('aria-haspopup','dialog');
-  icon.setAttribute('aria-controls','quickSignIn');
-  icon.addEventListener('click',(e)=>{e.preventDefault();dialog.showModal();byId('previewLoginIdentifier').focus();});
-  document.querySelector('footer a[href="#signin"]')?.addEventListener('click',(event)=>{event.preventDefault();dialog.showModal();byId('previewLoginIdentifier').focus();});
-  const showAuthPreview = (kind) => {
-    byId('previewLoginForm').hidden = kind !== 'signin';
-    byId('quickSignupPreview').hidden = kind !== 'signup';
-    byId('quickRecoveryPreview').hidden = kind !== 'recover';
-    byId('previewSignInTitle').textContent = kind === 'signup' ? 'Create a new account' : kind === 'recover' ? 'Recover your account' : 'Welcome back';
-    byId('previewLoginPassword').value = '';
-  };
-  byId('previewSignup').addEventListener('click',()=>showAuthPreview('signup'));
-  byId('previewRecovery').addEventListener('click',()=>showAuthPreview('recover'));
-  dialog.querySelectorAll('.ota-go-back').forEach(button=>button.addEventListener('click',()=>showAuthPreview('signin')));
-  const clearPreview = () => {byId('previewLoginPassword').value = '';byId('previewLoginIdentifier').value='';};
-  byId('closeQuickSignIn').addEventListener('click',()=>dialog.close());
-  dialog.addEventListener('close',()=>{clearPreview();showAuthPreview('signin');});
-  dialog.addEventListener('click',(e)=>{if(e.target===dialog)dialog.close();});
-  byId('previewLoginForm').addEventListener('submit',(e)=>{
-    e.preventDefault();clearPreview();
-    byId('quickSignInNotice').textContent='This is a visual preview. Sign-in is disabled until Sidra identity service is securely configured. No credentials were sent.';
-  });
+  // The header renders a single accessible Sign In link in index.html.
+  // Let its native navigation open /signin.html, where customers and
+  // administrators choose their separate account entry points.
+  // Never append a second label or intercept the anchor click.
   window.switchMain('hotels', true);
 })();
