@@ -25,12 +25,12 @@ test('cars offer Rent a car and Transport modes and both build enquiry only',()=
 });
 
 test('header renders one Sign In label and leaves native account navigation intact',()=>{
-  const icon=html.match(/<a class="account-icon"[^>]*>[\\s\\S]*?<\\/a>/)?.[0];
+  const icon=html.match(/<a class="account-icon"[^>]*>[\s\S]*?<\/a>/)?.[0];
   assert.ok(icon);
-  assert.match(icon,/class="account-text">Sign In<\\/span>/);
+  assert.match(icon,/class="account-text">Sign In<\/span>/);
   assert.equal((icon.match(/class="account-text"/g)||[]).length,1);
-  assert.doesNotMatch(ota,/icon\\.append\\(accountLabel\\)|icon\\.addEventListener\\(['"]click['"]/);
-  assert.match(extraCss,/\\.site-header \\.account-icon/);
+  assert.doesNotMatch(ota,/icon\.append\(accountLabel\)|icon\.addEventListener\(['"]click['"]/);
+  assert.match(extraCss,/\.site-header \.account-icon/);
 });
 
 
@@ -38,11 +38,11 @@ test('sign-in destination presents Customer and Admin choices without activating
   const choice=readFileSync(new URL('../public/signin.html',import.meta.url),'utf8');
   assert.match(choice,/Customer Sign In/);
   assert.match(choice,/Admin Sign In/);
-  assert.match(choice,/Email \\/ Username/);
-  assert.match(choice,/Forgot password\\?/);
+  assert.match(choice,/Email \/ Username/);
+  assert.match(choice,/Forgot password\?/);
   assert.match(choice,/Create a new account/);
   assert.match(choice,/Customer account sign-in is not yet activated/);
-  assert.doesNotMatch(ota,/quickSignIn|previewLoginForm|showModal\\(/);
+  assert.doesNotMatch(ota,/quickSignIn|previewLoginForm|showModal\(/);
 });
 
 
@@ -79,10 +79,10 @@ test('footer account entry opens the sign-in page and release assets bypass stal
 test('sign-in route shows customer entry first and owner-admin entry after',()=>{
   const choice=readFileSync(new URL('../public/signin.html',import.meta.url),'utf8');
   assert.match(html,/class="account-icon"[^>]*aria-label="Sign In"[^>]*title="Sign In"/);
-  assert.match(html,/class="account-icon" href="\\/signin\\.html"/);
+  assert.match(html,/class="account-icon" href="\/signin\.html"/);
   assert.ok(choice.indexOf('id="customerSignInCard"')<choice.indexOf('id="adminSignInCard"'));
-  assert.match(choice,/id="adminSignInButton"[^>]*href="https:\\/\\/admin\\.sidra-tourism\\.com\\//);
-  assert.doesNotMatch(ota,/icon\\.append\\(accountLabel\\)/);
+  assert.match(choice,/id="adminSignInButton"[^>]*href="https:\/\/admin\.sidra-tourism\.com\//);
+  assert.doesNotMatch(ota,/icon\.append\(accountLabel\)/);
 });
 
 
