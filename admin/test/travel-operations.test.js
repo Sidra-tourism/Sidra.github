@@ -63,3 +63,25 @@ test('only explicitly verified live inventory can be presented as real',()=>{
   assert.equal(assertSafeRateStatus({environment:'production',providerApproved:false}).publicBookable,false);
   assert.equal(assertSafeRateStatus({environment:'production',providerApproved:true,ticketingApproved:true}).publicBookable,true);
 });
+
+// Security regression: externally verified events still must match the correct booking and payment ledger.
+test('supplier ticket confirmation refuses mismatched booking references',()=>{
+  assert.throws(()=>transitionFlightBooking(
+    {status:'ticket_pending',reference:'ABC123',payment_status:'succeeded'},
+    {type:'supplier.ticket_issued',id:'supplier-event-11',verified:true,bookingReference:'WRONG999',ticketNumber:'1234567890123'}
+  ),/booking reference mismatch/i);
+});
+test('supplier cannot issue a ticket for a booking with an unpaid ledger',()=>{
+  assert.throws(()=>transitionFlightBooking(
+    {status:'ticket_pending',reference:'ABC123',payment_status:'pending'},
+    {type:'supplier.ticket_issued',id:'supplier-event-12',verified:true,bookingReference:'ABC123',ticketNumber:'1234567890123'}
+  ),/verified payment/i);
+});
+test('verified supplier reference and succeeded payment still permit ticket issued status',()=>{
+  const issued=transitionFlightBooking(
+    {status:'ticket_pending',reference:'ABC123',payment_status:'succeeded'},
+    {type:'supplier.ticket_issued',id:'supplier-event-13',verified:true,bookingReference:'ABC123',ticketNumber:'1234567890123'}
+  );
+  assert.equal(issued.status,'ticket_issued');
+  assert.equal(issued.reference,'ABC123');
+});

@@ -19,7 +19,10 @@ export function transitionFlightBooking(booking,event){
   if(!Object.hasOwn(rules,booking.status)||!Object.values(rules).some(row=>Object.hasOwn(row,event.type)))throw error('Unsupported event type or booking status');
   const target=rules[booking.status][event.type];
   if(!target)throw error('Illegal booking status transition');
+  if(event.type.startsWith('supplier.')&&booking.reference&&event.bookingReference&&
+      String(booking.reference)!==String(event.bookingReference))throw error('Supplier booking reference mismatch');
   if(event.type==='supplier.ticket_issued'){
+    if(booking.payment_status!=='succeeded')throw error('Verified payment required before ticket issuance');
     if(!/^[0-9]{10,15}$/.test(String(event.ticketNumber||'')))throw error('Supplier-issued ticket number required');
     if(!/^[A-Za-z0-9]{4,12}$/.test(String(booking.reference||event.bookingReference||'')))throw error('Supplier booking reference required');
   }
