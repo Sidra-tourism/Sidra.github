@@ -24,18 +24,27 @@ test('cars offer Rent a car and Transport modes and both build enquiry only',()=
   assert.doesNotMatch(ota,/fetch\(\s*['"]\/api\/(?:create-payment|confirm-booking)/);
 });
 
-test('header shows only Sign in beside the user icon',()=>{
-  assert.match(html,/class="account-icon"/);
-  assert.match(ota,/accountLabel\.textContent='Sign in'/);
+test('header renders one Sign In label and leaves native account navigation intact',()=>{
+  const icon=html.match(/<a class="account-icon"[^>]*>[\s\S]*?<\/a>/)?.[0];
+  assert.ok(icon);
+  assert.match(icon,/class="account-text">Sign In<\/span>/);
+  assert.equal((icon.match(/class="account-text"/g)||[]).length,1);
+  assert.doesNotMatch(ota,/icon\.append\(accountLabel\)|icon\.addEventListener\(['"]click['"]/);
   assert.match(extraCss,/\.site-header \.account-icon/);
 });
 
-test('sign in modal uses correct English and does not submit credentials',()=>{
-  for(const phrase of ['Email / Username','Password','Forgot password?','Create a new account'])assert.ok(ota.includes(phrase),phrase);
-  assert.match(ota,/showModal\(\)/);
-  assert.match(ota,/preventDefault\(\)/);
-  assert.match(ota,/Authentication is not activated/);
+
+test('sign-in destination presents Customer and Admin choices without activating authentication',()=>{
+  const choice=readFileSync(new URL('../public/signin.html',import.meta.url),'utf8');
+  assert.match(choice,/Customer Sign In/);
+  assert.match(choice,/Admin Sign In/);
+  assert.match(choice,/Email \/ Username/);
+  assert.match(choice,/Forgot password\?/);
+  assert.match(choice,/Create a new account/);
+  assert.match(choice,/Customer account sign-in is not yet activated/);
+  assert.doesNotMatch(ota,/quickSignIn|previewLoginForm|showModal\(/);
 });
+
 
 test('all search buttons display Search and preserve verification guardrails',()=>{
   assert.match(html,/>Search<\/button>/);
@@ -67,23 +76,17 @@ test('footer account entry opens the sign-in page and release assets bypass stal
 });
 
 
-test('sign-in layout presents exact customer wording in requested order',()=>{
+test('sign-in route shows customer entry first and owner-admin entry after',()=>{
+  const choice=readFileSync(new URL('../public/signin.html',import.meta.url),'utf8');
   assert.match(html,/class="account-icon"[^>]*aria-label="Sign In"[^>]*title="Sign In"/);
-  assert.doesNotMatch(html,/Sign in or sign up/);
-  assert.match(ota,/accountLabel\.textContent='Sign in'/);
-  const email=ota.indexOf('<label for="previewLoginIdentifier">Email / Username</label>');
-  const password=ota.indexOf('<label for="previewLoginPassword">Password</label>');
-  const signup=ota.indexOf('id="previewSignup">Create a new account</button>');
-  const recovery=ota.indexOf('id="previewRecovery">Forgot password?</button>');
-  const submit=ota.indexOf('class="ota-login-cta" type="submit">Sign in</button>');
-  assert.ok(email >= 0 && email < password);
-  assert.ok(password < signup && signup < recovery);
-  assert.ok(recovery < submit, 'Links must appear below password and above sign-in action');
-  assert.match(extraCss,/\.ota-login-links\s*\{display:flex;justify-content:space-between/);
-  assert.match(ota,/Authentication is not activated/);
+  assert.match(html,/class="account-icon" href="\/signin\.html"/);
+  assert.ok(choice.indexOf('id="customerSignInCard"')<choice.indexOf('id="adminSignInCard"'));
+  assert.match(choice,/id="adminSignInButton"[^>]*href="https:\/\/admin\.sidra-tourism\.com\//);
+  assert.doesNotMatch(ota,/icon\.append\(accountLabel\)/);
 });
 
+
 test('frontend revision versions the login assets for mobile cache refresh',()=>{
-  assert.match(html,/sidra-ota\.js\?v=20261116b/);
+  assert.match(html,/sidra-ota\.js\?v=20261116d/);
   assert.match(html,/sidra-ota\.css\?v=20261116b/);
 });

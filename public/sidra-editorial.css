@@ -46,7 +46,7 @@
 .editorial-layout .hero{
   position:relative;
   padding:70px 20px 35px!important;
-  background:linear-gradient(180deg,rgba(7,30,53,.35),rgba(7,29,50,.20) 50%,rgba(0,23,51,.34)),url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=2000&q=86') center 57%/cover!important;
+  background:linear-gradient(125deg,#102d57 0%,#164d86 55%,#087fa2 100%)!important;
   min-height:0!important;overflow:visible!important;
 }
 .editorial-layout .hero::before{display:none!important}

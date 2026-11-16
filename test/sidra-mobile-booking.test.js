@@ -91,11 +91,15 @@ test('mobile layout uses stacked search controls, cards and no fake inventory',(
   assert.doesNotMatch(js,/new Date\('2026-/);
 });
 
-test('customer sign-in safe preview unchanged',()=>{
-  assert.match(ota,/Email \/ Username/);
-  assert.match(ota,/Create a new account/);
-  assert.match(ota,/Forgot password\?/);
-  assert.match(ota,/Authentication is not activated/);
+test('customer and admin sign-in remain accessible in a separate choice screen',()=>{
+  const choice=readFileSync(new URL('../public/signin.html',import.meta.url),'utf8');
+  assert.match(choice,/Email \/ Username/);
+  assert.match(choice,/Create a new account/);
+  assert.match(choice,/Forgot password\?/);
+  assert.match(choice,/Customer Sign In/);
+  assert.match(choice,/Admin Sign In/);
+  assert.match(choice,/Customer account sign-in is not yet activated/);
+  assert.doesNotMatch(ota,/quickSignIn|previewLoginForm|icon\.append\(accountLabel\)/);
 });
 
 
