@@ -1,0 +1,31 @@
+name: Sidra Nuitée sandbox guard and regression suite
+on:
+  pull_request:
+    paths:
+      - 'nuitee-sandbox.js'
+      - 'server.js'
+      - 'test/nuitee-sandbox.test.js'
+      - '.github/workflows/sidra-nuitee-sandbox.yml'
+  push:
+    branches: [feature/sidra-nuitee-sandbox-preview-20261116]
+    paths:
+      - 'nuitee-sandbox.js'
+      - 'server.js'
+      - 'test/nuitee-sandbox.test.js'
+      - '.github/workflows/sidra-nuitee-sandbox.yml'
+permissions:
+  contents: read
+jobs:
+  sandbox-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check nuitee-sandbox.js
+          node --check server.js
+      - name: All Sidra regression tests
+        run: node --test test/*.test.js
