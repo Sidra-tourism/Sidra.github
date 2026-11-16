@@ -2,17 +2,30 @@
 const $=id=>document.getElementById(id);
 const state={authenticated:false,profile:null,recoveryToken:'',view:'overview',config:false};
 const meta={
-  overview:['Overview','Monitor the Sidra Tourism platform and its integrations.'],
-  bookings:['Bookings','Flight and hotel reservation visibility.'],
-  enquiries:['Enquiries','Review travel requests when the enquiry queue is connected.'],
-  customers:['Customers','Customer account oversight and membership readiness.'],
-  integrations:['Integrations','Monitor authorized travel suppliers and platform connections.'],
+  overview:['Overview','Monitor your travel-agency operations and connected supplier status.'],
+  bookings:['Bookings','Supplier-verified travel reservations and customer support queue.'],
+  flights:['Flights Desk','Flight offers, payments, ticket issuance and customer notifications.'],
+  hotels:['Hotels Desk','Hotel availability, supplier bookings and cancellation readiness.'],
+  enquiries:['Enquiries','Manage guest enquiries with an auditable workflow.'],
+  customers:['Customers','Private customer profiles and authenticated membership readiness.'],
+  transfers:['Cars & Transfers','Airport transportation, rentals and supplier operations.'],
+  experiences:['Qatar Experiences','Create enquiry-only guided desert and cultural tours.'],
+  finance:['Finance & Payments','Supplier payment verification, settlement and refunds.'],
+  suppliers:['Suppliers','Distribution provider and local supplier relationships.'],
+  iata:['IATA & Distribution','Accreditation, distribution, GDS and ticketing permissions.'],
+  integrations:['Integrations','API and payment integration readiness.'],
+  notifications:['Notifications','Operational alerts, status changes and support follow-ups.'],
+  reports:['Reports','Verified operational counts and reporting.'],
+  audit:['Audit Trail','Owner activity and administrative change history.'],
+  documents:['Documents','Approved vouchers, itineraries and booking documents.'],
+  settings:['Settings','Sidra administration, security and access controls.'],
   profile:['My Profile','Your administrator identity and role.']
 };
 function note(id,msg,type=''){const e=$(id);e.textContent=msg;e.className='notice '+type;}
 function show(section){
   for(const id of ['authWrap','passwordChangeWrap','workspaceWrap'])$(id).classList.toggle('hidden',id!==section);
   $('signOut').classList.toggle('hidden',section==='authWrap');
+  $('sidebarToggle')?.classList.toggle('hidden',section!=='workspaceWrap');
 }
 function selectAuth(form){
   for(const id of ['loginForm','recoverForm','resetForm'])$(id).classList.toggle('hidden',id!==form);
@@ -61,6 +74,7 @@ function openView(view){
   for(const name of Object.keys(meta))$(name+'View').classList.toggle('hidden',name!==view);
   $('viewTitle').textContent=meta[view][0];
   $('viewDesc').textContent=meta[view][1];
+  if(window.SidraOperations?.load)void window.SidraOperations.load(view);
 }
 async function openWorkspace(){
   const response=await api('/api/workspace');

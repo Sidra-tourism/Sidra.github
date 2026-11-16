@@ -27,5 +27,7 @@ jobs:
           node --check server.js
           node --check security.js
           node --check public/app.js
+      - name: Install admin runtime dependencies for integration tests
+        run: npm install --ignore-scripts --no-audit --no-fund --package-lock=false
       - name: Security and UI tests
         run: npm test
